@@ -4,7 +4,7 @@ This document outlines the step-by-step strategy for launching IDS Works and exe
 
 ## Phase 1: Launch Preparation (Next 48 Hours)
 
-*   [ ] **Deploy the Showcase:** Push this monolithic repository to a private GitHub repository. Connect it to Vercel/Netlify for a live, blazing-fast staging environment.
+*   [ ] **Deploy the Showcase:** Push this monolithic repository to a private GitHub repository. Connect it to Vercel (recommended over Netlify for Vite/React speeds) for a live, blazing-fast staging environment.
 *   [ ] **Acquire the Domain:** Purchase a professional agency domain via IONOS (e.g., `idsworks.mx` or `ids-sistemas.com`). Point the DNS to the Vercel/Netlify deployment.
 *   [ ] **Set up Professional Email:** Create an email address linked to the domain (e.g., `contacto@idsworks.mx`) via IONOS or Microsoft 365. Do not use personal Gmail accounts for outreach.
 *   [ ] **Generate Sales Assets:** Run `node generate_pdf.cjs` to generate the high-quality technical brochures. Print physical copies on premium paper for in-person drops.

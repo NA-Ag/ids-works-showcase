@@ -7,6 +7,7 @@ import { Demos } from './pages/Demos';
 import { StandardDemo } from './pages/StandardDemo';
 import { LiteDemo } from './pages/LiteDemo';
 import { IntegratedDemo } from './pages/IntegratedDemo';
+import { BrochureViewer } from './pages/BrochureViewer';
 
 function AppContent() {
   const location = useLocation();
@@ -22,6 +23,7 @@ function AppContent() {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/demos" element={<Demos />} />
+          <Route path="/brochure" element={<BrochureViewer />} />
           <Route path="/demos/standard/*" element={<StandardDemo />} />
           <Route path="/demos/lite/*" element={<LiteDemo />} />
           <Route path="/demos/integrated/*" element={<IntegratedDemo />} />

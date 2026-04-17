@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Settings, X, Shield, FileText } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 export const Footer: React.FC = () => {
   const [modalContent, setModalContent] = useState<'privacy' | 'terms' | null>(null);
@@ -58,6 +59,11 @@ export const Footer: React.FC = () => {
       {modalContent && <Modal type={modalContent} />}
       
       <div className="container mx-auto px-6">
+        <div className="flex flex-col md:flex-row justify-between items-center mb-12 text-center">
+            <Link to="/brochure" className="inline-block border border-vault-yellow text-vault-yellow px-8 py-3 rounded-sm font-bold uppercase tracking-widest text-xs hover:bg-vault-yellow hover:text-vault-darkBlue transition-all">
+                Ver Brochure Técnico PDF
+            </Link>
+        </div>
         <div className="flex flex-col md:flex-row justify-between items-center mb-8">
           <div className="flex items-center space-x-3 mb-6 md:mb-0">
              <Settings className="w-8 h-8 text-vault-yellow animate-spin-slow" style={{ animationDuration: '10s' }} />
