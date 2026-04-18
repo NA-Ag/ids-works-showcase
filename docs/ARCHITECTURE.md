@@ -1,62 +1,38 @@
-# IDS Works: Technical Architecture & The "Assembly Line"
+# IDS Works: Software Architecture & Distribution
 
-This document outlines the technical strategy for rapidly building and handing over 10 to 30 high-ticket school websites as a solo developer with zero ongoing maintenance.
+This document outlines the technical strategy for building, distributing, and selling "Offline-First" educational software modules with perpetual licensing.
 
-## 1. The Separation of Concerns: Showcase vs. Templates
+## 1. The Core Philosophy: "Pay Once, Own Forever"
+We are moving away from the traditional SaaS (Software as a Service) model. Educational institutions are experiencing subscription fatigue and increasing concerns over cloud data privacy. 
 
-Currently, `ids-works` is a monolithic repository. This is perfect for sales (you can show a client the pricing page and immediately drop them into a demo without a loading screen). However, **this repo is not what the client receives.**
+Our value proposition is:
+- **Zero Cloud:** Data never leaves the school's local area network (LAN).
+- **Zero Monthly Fees:** The software is purchased once and owned perpetually.
+- **Zero Ongoing Costs for Us:** We do not pay for cloud servers, database hosting, or third-party APIs.
 
-To scale the agency model, the actual deliverables will be separate, clean repositories:
-*   `ids-template-lite`
-*   `ids-template-standard`
-*   `ids-template-integrated`
+## 2. Technical Stack
 
-## 2. Configuration-Driven Development
-To avoid manually editing Tailwind classes across 50 components for every new client, the templates will rely on a single source of truth for customization.
+### The Software: Electron.js + Local Node.js
+*   **Framework:** All applications will be built using Electron.js, allowing us to use web technologies (HTML, CSS, JavaScript/TypeScript) to create native desktop executables for Windows, macOS, and Linux.
+*   **Database:** SQLite will be used for all local data storage. It is lightweight, serverless, and stores the entire database as a single file on the host machine.
+*   **Local Networking:** For multi-user environments (e.g., the library or admin office), one computer will act as the "Host" running an internal Node.js/Express server. Other computers on the same network (LAN) will connect to it. A built-in "Connection Wizard" will guide users to enter the Host's IPv4 address.
 
-Every template will have a `src/config/schoolConfig.ts` file:
-```typescript
-export const schoolConfig = {
-  name: "Colegio IDS Bosques",
-  domain: "idsbosques.edu.mx",
-  tier: "standard",
-  colors: {
-    primary: "#005C97",
-    secondary: "#FFD700",
-  },
-  integrations: {
-    microsoftEntraTenantId: "YOUR_TENANT_ID"
-  }
-}
-```
-*   **The Goal:** Selling a "Lite" tier should only take 15 minutes of developer time. You clone the template, update this config file, swap out the images in `public/assets/`, and push to GitHub.
+### The Storefront & Distribution: GitHub ecosystem
+*   **Sales Site:** This `ids-works-showcase` repository acts as the storefront. It is statically hosted for free on GitHub Pages at `idsworks.com.mx`.
+*   **Software Distribution:** Compiled binaries (e.g., `.exe`, `.dmg`) will be hosted on GitHub Releases. When a user buys a module, they will be given a direct download link to the GitHub Release asset, ensuring we pay $0 for bandwidth.
 
-## 3. The CMS: Decap CMS (Formerly Netlify CMS)
-You are selling a "Visual CMS" to schools without wanting to manage a database. The solution is **Decap CMS**.
+## 3. The Sales & Fulfillment Funnel
 
-*   **How it works:** It is a Git-based, headless CMS. It runs as a React app at `/admin` on the school's site.
-*   **The Magic:** When a school administrator logs in via Microsoft Entra ID and changes the "Hero Image" or adds a news article, Decap CMS literally makes a `git commit` directly to the GitHub repository, saving the content as Markdown files.
-*   **The Build:** That commit automatically triggers Vercel/Netlify to rebuild the site.
-*   **Why it's perfect:** Zero database costs. Zero server maintenance. If the school breaks it, the history is in Git.
+To ensure the business operates as a passive income stream, the purchase and fulfillment process is 100% automated using Serverless Webhooks.
 
-## 4. The Deployment & "Handoff" Flow
+1.  **Purchase:** A school visits `idsworks.com.mx`, selects a module (e.g., "Core School Admin Suite"), and clicks "Comprar Módulo".
+2.  **Payment Gateway:** They are redirected to a secure checkout hosted by **Mercado Pago**.
+3.  **Webhook Trigger:** Upon successful payment, Mercado Pago sends an HTTP POST request (webhook) to a free Cloudflare Worker.
+4.  **License Generation:** The Cloudflare Worker script receives the webhook, verifies the payment, and generates a unique cryptographic license key based on the purchased tier (e.g., valid for 20 local PCs).
+5.  **Delivery:** The Cloudflare Worker uses a free email API (like Resend) to instantly email the school director their License Key, the GitHub download link, and the installation instructions.
 
-Since you are not providing a `.zip` file, but a living, breathing application, here is the exact standard operating procedure (SOP) when a client signs a contract:
-
-### Phase 1: Staging (The First 50% Payment)
-1.  **Clone Template:** Clone the required tier template to a private repo on *your* GitHub account (e.g., `github.com/YourOrg/Colegio-X-Staging`).
-2.  **Customize:** Update `schoolConfig.ts` and initial assets.
-3.  **Deploy to Vercel/Netlify:** Connect the repo to your own Vercel/Netlify account.
-4.  **Present:** Show the client the live staging link (e.g., `colegio-x-staging.vercel.app`).
-
-### Phase 2: Production Setup (Domain & Microsoft)
-1.  **Domain:** Secure their `.edu.mx` domain via IONOS/Akky (See `EDU_MX_PROCESS.md`).
-2.  **DNS:** Point the IONOS DNS (A Record and CNAME) to the Vercel/Netlify project.
-3.  **Microsoft 365:** Setup their Entra ID / Office 365 free tier (See `MICROSOFT_SETUP.md`) and inject the production Tenant IDs into the Vercel/Netlify environment variables.
-
-### Phase 3: The "Flip" (The Final 50% Payment & Handoff)
-1.  **Payment:** Collect the final payment.
-2.  **Transfer Repo:** Transfer ownership of the GitHub repository to the school's official GitHub account.
-3.  **Transfer Hosting:** Transfer ownership of the Vercel/Netlify project to their account.
-4.  **Deliver Manual:** Hand over the dynamically generated PDF Technical Manual containing all their keys, logins, and instructions.
-5.  **Walk Away:** You are now completely hands-off. The infrastructure is sovereign to the school.
+## 4. Premium Web Services
+As a secondary income stream, we continue to offer high-ticket Jamstack websites (Tier Lite and Tier Estándar). 
+*   These are strictly source-code deliveries.
+*   We build the site, transfer the GitHub repository to the client, and they handle their own domain and hosting setups. 
+*   We no longer offer complex "Integrated" Microsoft Azure/Entra ID setups.

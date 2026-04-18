@@ -190,10 +190,6 @@ export const Demos: React.FC = () => {
         </div>
       </Section>
 
-      <Section id="roi-simulator" variant="light" fullWidth className="pt-0">
-        <ROICalculator />
-      </Section>
-
       {/* 3. DEMO SELECTORS */}
       <Section id="demo-selectors" variant="light" className="py-24 bg-vault-paper">
         <div className="text-center mb-16">
@@ -201,7 +197,7 @@ export const Demos: React.FC = () => {
           <p className="text-vault-gray max-w-xl mx-auto font-medium">Explore cómo se adapta nuestra tecnología a diferentes necesidades institucionales.</p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
           {/* Lite Demo Card */}
           <div className="bg-white border-2 border-gray-100 p-8 flex flex-col hover:border-vault-blue transition-all group relative overflow-hidden shadow-sm hover:shadow-xl">
             <div className="mb-6 bg-slate-50 w-16 h-16 rounded-full flex items-center justify-center group-hover:bg-vault-blue/10 transition-colors">
@@ -241,26 +237,6 @@ export const Demos: React.FC = () => {
                 Lanzar Demo <ExternalLink size={16} />
               </Link>
               <p className="mt-4 text-[9px] font-mono text-center text-vault-yellow/60 uppercase tracking-tighter">Basado en Colegio IDS</p>
-            </div>
-          </div>
-
-          {/* Integrated Demo Card */}
-          <div className="bg-white border-2 border-gray-100 p-8 flex flex-col hover:border-vault-blue transition-all group relative overflow-hidden shadow-sm hover:shadow-xl">
-            <div className="mb-6 bg-slate-50 w-16 h-16 rounded-full flex items-center justify-center group-hover:bg-vault-blue/10 transition-colors">
-              <Layers className="w-8 h-8 text-gray-400 group-hover:text-vault-blue transition-colors" />
-            </div>
-            <h3 className="text-2xl font-black text-vault-darkBlue mb-2 uppercase">INTEGRADO</h3>
-            <div className="text-[10px] font-mono text-vault-blue font-bold uppercase mb-4 tracking-widest">Entrega: 140 Días</div>
-            <p className="text-sm text-gray-500 mb-8 flex-grow leading-relaxed">
-              Ecosistema avanzado con integración de pagos, bases de datos nativas en Microsoft y sincronización multi-plantel automática.
-            </p>
-            <div className="pt-6 border-t border-gray-100">
-              <Link 
-                to="/demos/integrated" 
-                className="w-full bg-white border-2 border-vault-blue text-vault-darkBlue py-4 px-6 rounded-sm font-black text-center flex items-center justify-center gap-2 hover:bg-vault-blue hover:text-white transition-all uppercase tracking-widest"
-              >
-                Lanzar Demo <ExternalLink size={16} />
-              </Link>
             </div>
           </div>
         </div>

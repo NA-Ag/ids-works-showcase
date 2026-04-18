@@ -211,9 +211,9 @@ export const Hero: React.FC = () => {
              </div>
              
              {/* Decorative Badge */}
-             <div className="absolute -bottom-6 -right-6 bg-vault-yellow text-vault-darkBlue p-6 rounded-full border-4 border-white shadow-lg flex flex-col items-center justify-center w-32 h-32 z-40">
-               <span className="font-black text-3xl font-mono">.edu</span>
-               <span className="text-[10px] font-bold uppercase tracking-widest text-center leading-tight">Certificado<br/>Oficial</span>
+             <div className="absolute -bottom-6 -right-6 bg-vault-yellow text-vault-darkBlue p-6 rounded-full border-4 border-white shadow-lg flex flex-col items-center justify-center w-32 h-32 z-40 text-center">
+               <span className="font-black text-sm uppercase leading-tight font-sans tracking-widest">Pago<br/>Único</span>
+               <span className="text-[10px] font-bold uppercase tracking-widest text-center leading-tight mt-1 opacity-70">Sin<br/>Rentas</span>
              </div>
           </div>
           

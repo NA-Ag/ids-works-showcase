@@ -1,0 +1,57 @@
+IDS Master Document: Zero-Cost Educational Software Strategy
+
+Business Model: "Pay Once, Own Forever" (Perpetual Licensing)
+Target Market: Private Schools in Interlomas, State of Mexico, and nationwide.
+Core Philosophy: Zero recurring costs for the developer (no paid APIs, no paid servers) and zero recurring costs for the schools. Undercut VC-backed SaaS platforms by offering robust, locally-hosted solutions.
+
+Immediate Financial Goal & Ultimate Objective:
+The immediate revenue target is $500,000 MXN. Any revenue beyond this is passive income. The primary purpose of this pivot is to create a "set it and forget it" automated business that generates cash flow without requiring manual developer intervention or maintenance. This absolute time-freedom will fund and allow complete focus on the true passion project: the Godot port of Penko Adventure (language learning app).
+
+1. Technical Architecture & Distribution
+
+Sales Platform (Frontend): GitHub Pages. Completely free hosting for the static idsworks.com.mx website.
+Software Framework: Electron.js. Allows us to build cross-platform desktop applications (Windows, macOS, Linux) using web technologies (HTML, CSS, JavaScript) + SQLite for local databases.
+Distribution: GitHub Releases. Download links point to the respective GitHub release assets (free bandwidth).
+
+Local Networking (The "Cloud" Replacement): 
+Applications designed for multiple users will utilize local network protocols (LAN) via Node.js (Express). 
+*CRITICAL FIX:* Because school networks (VLANs/Firewalls) are messy, relying solely on auto-discovery (mDNS) will cause support tickets. The software MUST include a robust "Connection Wizard" that displays the Host's exact IPv4 address, allowing client computers to connect manually if auto-discovery fails.
+
+Licensing System: Offline cryptographic hash keys validated locally. It allows exactly the specified number of unique local IP/MAC addresses to connect to the host.
+
+2. Payment Automation & Fulfillment Strategies
+
+To achieve true passive income, fulfillment must be bulletproof. 
+
+Chosen Strategy: Serverless Webhooks + Mercado Pago (The "Sleep Well" Route)
+*Why not email parsing?* Parsing bank emails (CoDi) is too fragile. If the bank changes a single pixel in their email template, the system breaks, schools don't get their software, and the "passive" income becomes an active customer service nightmare.
+How it works:
+1. Create a checkout link via Mercado Pago.
+2. Mercado Pago sends a Webhook to a free Cloudflare Worker (100k free requests/day).
+3. The Worker generates the cryptographic license key and uses a free email service (Resend) to email the key and download link to the school.
+4. Cost: ~3.49% + $4 MXN per transaction, which is a cheap price to pay for 100% automated reliability.
+
+3. Product Concepts & Pricing Strategy (Offline Modules)
+
+Concept 1: Core School Admin Suite (20 PCs) - $15,000 MXN
+Concept 2: Local Finance & Tuition Tracker (4 PCs) - $2,500 MXN
+Concept 3: Offline Gamified Learning Lab (30 PCs) - $20,000 MXN
+Concept 4: Centralized Teacher Gradebook (50 PCs) - $10,000 MXN
+Concept 5: Library Inventory & Check-out (5 PCs) - $5,000 MXN
+Concept 6: Cafeteria Point of Sale (POS) (3 PCs) - $3,000 MXN
+Concept 7: Local HR & Payroll Calculator (5 PCs) - $5,000 MXN
+Concept 8: Student Discipline & Attendance Tracker (15 PCs) - $8,000 MXN
+Concept 9: School Clinic / Infirmary Log (2 PCs) - $2,000 MXN
+Concept 10: Parent Communication Board/Signage (5 Screens) - $4,000 MXN
+
+4. Premium Add-on Services: Sovereign Websites
+
+We will still offer the "Jamstack" websites from our original agency model, but strictly as high-ticket, source-code-only deliveries. We no longer manage domains or Microsoft integrations. We build the code, we hand over the GitHub repo, and we walk away.
+* Tier 1: Lite (Basic Template, Content Swap) - Premium Pricing.
+* Tier 2: Standard (Visual CMS integration via Decap) - High-Ticket Pricing.
+* Note: The "Integrated" tier (Microsoft Entra/Graph API) is retired to eliminate complex IT consulting from our workload.
+
+5. Marketing, SEO, and Outreach
+
+SEO Strategy: Optimize idsworks.com.mx for "Software para escuelas pago único", "Sistema de control escolar sin mensualidades", etc.
+Automated Cold Email: Run a local script to email directors focusing purely on cost savings and data privacy: "Stop paying $50k/year on cloud SaaS. Buy once, own forever."

@@ -3,9 +3,10 @@ import { ServiceItem, NavItem, Stat, PricingTier } from './types';
 
 export const NAV_ITEMS: NavItem[] = [
   { label: 'Inicio', href: '/#hero' },
-  { label: 'Infraestructura', href: '/#services' },
-  { label: 'Seguridad', href: '/#security' },
-  { label: 'Inversión', href: '/#pricing' },
+  { label: 'Beneficios', href: '/#value-prop' },
+  { label: 'Catálogo', href: '/#catalog' },
+  { label: 'Sitios Web', href: '/#web-templates' },
+  { label: 'FAQ', href: '/#faq' },
 ];
 
 export const SERVICES: ServiceItem[] = [

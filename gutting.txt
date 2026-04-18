@@ -1,0 +1,45 @@
+# Project Pivot: The "Gutting" Plan
+
+This document outlines the architectural and content teardown of the current IDS Works repository to transition from a High-Ticket IT Agency to an Automated Offline Software Vendor (SaaP) selling Electron modules + Premium Web Templates.
+
+## 1. What to Remove Completely (The "Gutting")
+
+### Code & Demos
+*   `src/demos/integrated/`: Delete entirely. We are no longer offering the complex Microsoft Graph API / Zero-Touch provisioning tier.
+*   `MicrosoftLoginDemo.tsx` & all Microsoft Entra/Azure specific UI components.
+*   The complex pricing tables that sold "Consulting & Delivery Days". 
+
+### Documentation
+*   `docs/MICROSOFT_SETUP.md`: Delete (no longer offering IT setup).
+*   `docs/EDU_MX_PROCESS.md`: Delete (no longer offering domain management).
+*   `docs/ARCHITECTURE.md`: Rewrite to reflect GitHub Pages + Electron distribution, rather than the Vercel/Netlify agency flip.
+
+## 2. Tone Shift & Copywriting Rewrite
+
+### The Old Tone (To be removed)
+*   *Vibe:* "Military-grade", "Fallout Terminal", "Vault Security", "Sistemas Soberanos", highly aggressive tech-bro agency.
+*   *Why it fails now:* Too intimidating for a school principal looking to buy a $3,000 MXN Cafeteria POS system.
+
+### The New Tone (To be implemented)
+*   *Vibe:* "Acogedor, Profesional, Confiable y Cercano" (Warm, professional, friendly Mexican Spanish). 
+*   *Key Phrasing:* 
+    *   "Software que realmente te pertenece." (Software you actually own).
+    *   "Sin rentas mensuales, sin ataduras." (No monthly rents, no strings attached).
+    *   "Fácil de instalar, funciona sin internet." (Easy to install, works offline).
+*   *Action Item:* All text in `src/pages/Home.tsx` and the Hero components must be rewritten to address the specific pain point: *Schools are tired of paying expensive monthly subscriptions for software they don't own.*
+
+## 3. What We Are Keeping (The Core Assets)
+
+### Visuals & Aesthetics
+*   **The Color Palette:** Keep the `vault-blue`, `vault-yellow`, and `vault-paper` hex codes. They look highly professional and academic. (We can rename the variables later if desired, but the colors stay).
+*   **The Brand:** Keep the name "I.D.S Works".
+*   **The Hero Component:** Keep the `Hero.tsx` layout and the cool terminal/scanline animations. However, we will change the *text* inside the terminal from "System Initialization / Access Granted" to something friendly but tech-forward, like compiling a list of school modules or showing a successful "Offline License Validated" animation.
+*   **The Global Structure:** Keep `Header.tsx` and `Footer.tsx`, but simplify the navigation links to point to the Software Catalog and the Premium Web Templates.
+
+## 4. The New Landing Page Structure (Tomorrow's Work)
+
+1.  **Hero:** Animated intro pitching "Software escolar de pago único. Sin internet, sin rentas."
+2.  **The Catalog Grid:** A beautiful grid displaying the 10 offline Electron modules (Admin, Cafeteria, Library, etc.) with their one-time prices and "Buy via MercadoPago" buttons.
+3.  **The Value Prop:** Why offline is better (Privacy, Speed, No SaaS fees).
+4.  **Premium Web Services:** A dedicated section at the bottom for schools that *also* want a blazing-fast Jamstack website (Lite and Standard templates). 
+5.  **FAQ:** Addressing how licenses work and why we don't offer 24/7 IT support (because it just works).
