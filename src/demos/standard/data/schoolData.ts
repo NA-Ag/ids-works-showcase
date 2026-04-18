@@ -2,7 +2,7 @@ import { NavItem, AcademicStage, NewsItem } from '../types/types';
 
 export const SCHOOL_NAME = "Colegio IDS";
 export const SCHOOL_PHONE = "55 0000 0000";
-export const SCHOOL_EMAIL = "admissions@colegio-ids.edu.mx";
+export const SCHOOL_EMAIL = "admissions@colegio-ids.com";
 export const SCHOOL_ADDRESS = "Avenida de la Excelencia 101, Ciudad de México, CDMX";
 
 export const HEADMASTER_NAME = "Dr. Roberto García";
@@ -634,7 +634,7 @@ export const getSchoolData = (lang: 'en' | 'es') => {
       ],
       news: [
         { title: "Excelencia en Diploma IB", date: "Abril 2024", category: "Academia", excerpt: "Analizando los últimos resultados y el impacto pedagógico del marco IB en nuestra generación de preparatoria.", imageUrl: "https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&q=80&w=800" },
-        { title: "Soberanía Digital 2024", date: "Marzo 2024", category: "Tecnología", excerpt: "Cómo nuestra alianza con Microsoft está dando forma a la próxima década de infraestructura educativa.", imageUrl: "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&q=80&w=800" }
+        { title: "Soberanía Digital 2024", date: "Marzo 2024", category: "Tecnología", excerpt: "Cómo nuestra alianza con líderes tecnológicos está dando forma a la próxima década de infraestructura educativa.", imageUrl: "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&q=80&w=800" }
       ]
     }
   };

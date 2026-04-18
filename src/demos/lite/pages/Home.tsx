@@ -121,21 +121,20 @@ const LiteHome: React.FC = () => {
       details: 'Nuestra Primaria ofrece una educación integral que equilibra el rigor académico con el desarrollo humano. Los estudiantes no solo dominan el inglés como segunda lengua, sino que aprenden a pensar de manera crítica, colaborando en proyectos de tecnología y ciencias que los conectan con el mundo real, bajo la certificación de organismos internacionales.',
       features: [
         'Certificaciones Cambridge English desde 3º grado',
-        'Uso institucional de Microsoft 365 para tareas y colaboración',
+        'Uso de plataformas educativas digitales para colaboración',
         'Laboratorio de robótica y pensamiento computacional (coding)',
         'Programa de deportes competitivos y educación física integral',
         'Formación en valores y liderazgo ético diario'
       ]
-    },
-    { 
-      title: 'Secundaria', 
-      levels: '1º - 3º', 
-      desc: 'Desarrollo de pensamiento complejo y proyectos de investigación interdisciplinarios.', 
+      },
+      {
+      title: 'Secundaria',
+      levels: '1º - 3º',
+      desc: 'Desarrollo de pensamiento complejo y proyectos de investigación interdisciplinarios.',
       details: 'En Secundaria, fomentamos la curiosidad intelectual y el sentido de responsabilidad global. Los alumnos se involucran en investigaciones profundas, debates institucionales y laboratorios especializados. El sistema IDS permite un seguimiento académico preciso, preparando a los jóvenes para los retos de la preparatoria con una mentalidad analítica y emprendedora.',
       features: [
         'Modelo de Naciones Unidas (MUN) y oratoria institucional',
-        'Certificaciones Microsoft Office Specialist (MOS) de grado profesional',
-        'Proyectos interdisciplinarios enfocados en la sustentabilidad',
+        'Certificaciones de tecnología de grado profesional',        'Proyectos interdisciplinarios enfocados en la sustentabilidad',
         'Intercambios internacionales y programas de inmersión cultural',
         'Seguimiento psicopedagógico para la orientación vocacional'
       ]
@@ -330,7 +329,7 @@ const LiteHome: React.FC = () => {
         </div>
       </section>
 
-      {/* Microsoft 365 Core Teaser Section */}
+      {/* Core Teaser Section */}
       <section id="ms365" className={`py-32 bg-white ${isKinder ? 'border-y-[20px] border-emerald-100' : 'border-y-8 border-vault-yellow'} overflow-hidden relative`}>
         {isKinder && (
           <div className="absolute top-0 left-0 w-full h-10 bg-gradient-to-r from-pink-200 via-amber-200 to-sky-200 opacity-50"></div>
@@ -354,7 +353,7 @@ const LiteHome: React.FC = () => {
                   <LogIn className={`w-16 h-16 ${isKinder ? 'text-emerald-500' : accentColor} transition-transform group-hover:scale-125`} />
                 </div>
                 <span className="text-3xl font-black uppercase tracking-tighter">¡ENTRAR AQUÍ!</span>
-                <span className="text-xs font-mono font-bold text-gray-300">Microsoft 365 Digital Secure</span>
+                <span className="text-xs font-mono font-bold text-gray-300">Portal Institucional</span>
               </button>
             </div>
 
@@ -491,7 +490,7 @@ const LiteHome: React.FC = () => {
               <h4 className={`text-[10px] font-black uppercase tracking-widest ${isKinder ? 'text-pink-500' : 'text-vault-darkBlue'} opacity-40`}>Contacto Oficial</h4>
               <ul className="space-y-6">
                 <li className={`flex items-center gap-4 text-sm font-black text-gray-600 hover:${accentColor} transition-colors cursor-pointer group`} onClick={() => setActiveModal('admissions')}>
-                  <div className={`p-2 ${isKinder ? 'bg-pink-50 rounded-lg' : ''} group-hover:scale-110 transition-transform`}><Mail size={20} className={accentColor} /></div> {isKinder ? 'hola@kinder-ids.edu.mx' : 'admissions@colegio-ids.edu.mx'}
+                  <div className={`p-2 ${isKinder ? 'bg-pink-50 rounded-lg' : ''} group-hover:scale-110 transition-transform`}><Mail size={20} className={accentColor} /></div> {isKinder ? 'hola@kinder-ids.com' : 'admissions@colegio-ids.com'}
                 </li>
                 <li className="flex items-center gap-4 text-sm font-black text-gray-600 group">
                   <div className={`p-2 ${isKinder ? 'bg-amber-50 rounded-lg' : ''} group-hover:scale-110 transition-transform`}><Phone size={20} className={isKinder ? 'text-amber-500' : accentColor} /></div> +52 (55) 0000-0000
@@ -508,8 +507,8 @@ const LiteHome: React.FC = () => {
                     <span className="flex items-center gap-1"><ShieldCheck size={14} /> Dominio Activo</span>
                     <span>HTTPS</span>
                  </div>
-                 <p className={`text-sm font-mono font-black border-b border-gray-50 pb-2 ${isKinder ? 'text-pink-600' : 'text-vault-darkBlue'}`}>{isKinder ? 'www.kinder-ids.edu.mx' : 'www.colegio-ids.edu.mx'}</p>
-                 <p className="text-[10px] text-gray-400 italic">Certificado SSL gestionado por IDS Works Systems Div.</p>
+                 <p className={`text-sm font-mono font-black border-b border-gray-50 pb-2 ${isKinder ? 'text-pink-600' : 'text-vault-darkBlue'}`}>{isKinder ? 'www.kinder-ids.com' : 'www.colegio-ids.com'}</p>
+                 <p className="text-[10px] text-gray-400 italic">Certificado SSL vigente.</p>
               </div>
             </div>
             <div className="space-y-8">

@@ -6,7 +6,7 @@ import { Link } from 'react-router-dom';
 const TERMINAL_LINES = [
   "> INITIALIZING IDS-WORKS PROTOCOL...",
   "> BYPASSING LEGACY WORDPRESS CORE...",
-  "> ESTABLISHING .edu.mx HANDSHAKE...",
+  "> ESTABLISHING LOCAL HANDSHAKE...",
   "> DEPLOYING STATIC ARCHITECTURE...",
   "> OVERRIDING MS-365 SUBSCRIPTIONS...",
   "> OPTIMIZING CAMPUS CONNECTIVITY...",
@@ -60,7 +60,7 @@ export const Hero: React.FC = () => {
           </h1>
 
           <p className="text-lg md:text-xl text-vault-gray font-medium max-w-xl leading-relaxed border-l-4 border-vault-yellow pl-6">
-            Revolucionando la gestión académica para un mañana digital más brillante. Entregamos soluciones de arquitectura estática que eliminan la obsolescencia técnica, conectando su campus al ecosistema global de Microsoft 365 - en línea con la validez oficial .edu.mx.
+            Revolucionando la gestión académica para un mañana digital más brillante. Entregamos soluciones de arquitectura estática que eliminan la obsolescencia técnica.
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 pt-4">
@@ -121,7 +121,7 @@ export const Hero: React.FC = () => {
                           <div className="w-1.5 h-1.5 rounded-full bg-green-500"></div>
                         </div>
                         <div className="bg-slate-900 px-2 py-0.5 rounded text-[8px] flex-grow font-mono text-slate-400">
-                          https://colegio-internacional.edu.mx
+                          https://colegio-internacional.com
                         </div>
                       </div>
 

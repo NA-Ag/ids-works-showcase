@@ -116,7 +116,7 @@ export const CmsEditor = ({ isEn }: { isEn: boolean }) => {
                     </div>
                     <div className="flex-grow bg-gray-100 rounded-full px-4 py-1.5 flex items-center gap-2">
                         <Globe size={12} className="text-gray-400" />
-                        <span className="text-[10px] font-mono text-gray-500 uppercase tracking-tighter">https://colegioids.edu.mx/preview</span>
+                        <span className="text-[10px] font-mono text-gray-500 uppercase tracking-tighter">https://colegioids.com/preview</span>
                     </div>
                     <div className="flex gap-2">
                         <div className="p-1.5 bg-gray-50 rounded text-gray-400 hover:text-[#0078d4] cursor-pointer"><Eye size={14} /></div>

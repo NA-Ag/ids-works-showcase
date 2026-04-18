@@ -48,10 +48,10 @@ export const AdminHomeView = ({ isEn, setActiveAdminTab }: AdminHomeViewProps) =
                 </div>
                 <div className="p-8 space-y-6 flex-grow">
                     {[
-                        { label: '.edu.mx Domain verification', icon: Globe, status: 'Verified' },
-                        { label: 'Microsoft 365 A1 Eligibility', icon: CheckCircle2, status: 'Active' },
+                        { label: 'Domain verification', icon: Globe, status: 'Verified' },
+                        { label: 'Cloud Services Eligibility', icon: CheckCircle2, status: 'Active' },
                         { label: 'SharePoint Site Hierarchy', icon: FileCode, status: 'Deployed' },
-                        { label: 'Microsoft Graph API Integration', icon: Key, status: 'Hardened' }
+                        { label: 'Graph API Integration', icon: Key, status: 'Hardened' }
                     ].map((item, i) => (
                         <div key={i} className="flex items-center justify-between group">
                             <div className="flex gap-4 items-center">
@@ -81,10 +81,10 @@ export const AdminHomeView = ({ isEn, setActiveAdminTab }: AdminHomeViewProps) =
                 </div>
                 <div className="p-8 space-y-4 flex-grow">
                     {[
-                        { url: 'www.colegioids.edu.mx', type: 'Public Web', secure: true },
-                        { url: 'portal.colegioids.edu.mx', type: 'Intranet', secure: true },
-                        { url: 'alumni.colegioids.edu.mx', type: 'Enterprise App', secure: true },
-                        { url: 'biblioteca.colegioids.edu.mx', type: 'Resources', secure: true }
+                        { url: 'www.colegioids.com', type: 'Public Web', secure: true },
+                        { url: 'portal.colegioids.com', type: 'Intranet', secure: true },
+                        { url: 'alumni.colegioids.com', type: 'Enterprise App', secure: true },
+                        { url: 'biblioteca.colegioids.com', type: 'Resources', secure: true }
                     ].map((d, i) => (
                         <div key={i} className="flex items-center justify-between p-3 bg-gray-50 rounded border border-gray-100 group hover:border-vault-blue transition-all">
                             <div className="flex flex-col">

@@ -9,7 +9,7 @@ import {
 
 // Reusing standard components for the "clone" effect
 import { Toast } from '@/demos/standard/components/dashboard/Toast';
-import { MicrosoftTopBar } from '@/demos/standard/components/dashboard/MicrosoftTopBar';
+import { TopBar } from '@/demos/standard/components/dashboard/TopBar';
 import { ParentDashboard } from '@/demos/standard/components/dashboard/ParentDashboard';
 import { AdminHomeView } from '@/demos/standard/components/dashboard/AdminHomeView';
 
@@ -29,7 +29,7 @@ const Dashboard: React.FC = () => {
   // Simulated Teams Data
   const teamsPosts = [
     { id: 1, user: "Dr. Roberto García", role: "Director General", time: "2h ago", text: "¡Bienvenidos al segundo periodo! Recuerden revisar los protocolos de seguridad actualizados en la sección de Archivos.", likes: 12 },
-    { id: 2, user: "Admin System", role: "Security", time: "5h ago", text: "Integración de identidad .edu.mx completada. Su inicio de sesión SSO ya está activo para todos los portales.", likes: 45 },
+    { id: 2, user: "Admin System", role: "Security", time: "5h ago", text: "Integración de identidad completada. Su inicio de sesión SSO ya está activo para todos los portales.", likes: 45 },
     { id: 3, user: "Sarah Jenkins", role: "Profesora", time: "Yesterday", text: "Lab de Física: Por favor entreguen sus reportes antes del viernes 4PM. Sin excepciones.", likes: 8 }
   ];
 
@@ -41,7 +41,7 @@ const Dashboard: React.FC = () => {
   
   const [originalRole] = useState(location.state?.role || 'student');
   const [currentRole, setCurrentRole] = useState(location.state?.role || 'student');
-  const email = location.state?.email || 'alumno@colegioids.edu.mx';
+  const email = location.state?.email || 'alumno@colegioids.com';
 
   const getTeamsList = () => {
     if (originalRole === 'admin') return [{ id: 'ids', name: "Colegio IDS", sub: "Admin Global", color: "bg-vault-darkBlue" }];
@@ -82,7 +82,7 @@ const Dashboard: React.FC = () => {
   if (currentRole === 'alumni') {
     return (
         <div className="flex flex-col h-screen bg-[#f8fafc] font-sans overflow-hidden">
-            <MicrosoftTopBar 
+            <TopBar 
                 title="Portal de Egresados"
                 color="#ea580c" isEn={isEn} email={email}
                 isWaffleOpen={isWaffleOpen} setIsWaffleOpen={setIsWaffleOpen}
@@ -132,7 +132,7 @@ const Dashboard: React.FC = () => {
   if (currentRole === 'parent') {
     return (
         <div className="flex flex-col h-screen bg-[#f8fafc] font-sans overflow-hidden">
-            <MicrosoftTopBar 
+            <TopBar 
                 title="Portal de Padres"
                 color="#10b981" isEn={isEn} email={email}
                 isWaffleOpen={isWaffleOpen} setIsWaffleOpen={setIsWaffleOpen}
@@ -152,8 +152,8 @@ const Dashboard: React.FC = () => {
   if (currentRole === 'admin' && originalRole === 'admin') {
     return (
       <div className="flex flex-col h-screen bg-[#f3f2f1] font-sans overflow-hidden">
-        <MicrosoftTopBar 
-            title="Microsoft 365 admin center" 
+        <TopBar 
+            title="Centro de Administración" 
             isEn={isEn} email={email} 
             isWaffleOpen={isWaffleOpen} setIsWaffleOpen={setIsWaffleOpen}
             isProfileOpen={isProfileOpen} setIsProfileOpen={setIsProfileOpen}
@@ -205,9 +205,8 @@ const Dashboard: React.FC = () => {
 
   return (
     <div className="flex flex-col h-screen bg-white font-sans overflow-hidden">
-      <MicrosoftTopBar 
-        title="Microsoft Teams" color="#464775" 
-        isEn={isEn} email={email}
+      <TopBar
+        title="Portal Docente" color="#464775"        isEn={isEn} email={email}
         isWaffleOpen={isWaffleOpen} setIsWaffleOpen={setIsWaffleOpen}
         isProfileOpen={isProfileOpen} setIsProfileOpen={setIsProfileOpen}
         onLogout={handleLogout}
@@ -320,4 +319,4 @@ const Dashboard: React.FC = () => {
   );
 };
 
-export default Dashboard;
+export default Dashboard;d;hboard;d;

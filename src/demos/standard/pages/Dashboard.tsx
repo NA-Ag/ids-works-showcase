@@ -10,7 +10,7 @@ import { useLanguage } from '@/demos/standard/context/LanguageContext';
 
 // Import extracted components
 import { Toast } from '../components/dashboard/Toast';
-import { MicrosoftTopBar } from '../components/dashboard/MicrosoftTopBar';
+import { TopBar } from '../components/dashboard/TopBar';
 import { ParentDashboard } from '../components/dashboard/ParentDashboard';
 import { AdminHomeView } from '../components/dashboard/AdminHomeView';
 import { CmsEditor } from '../components/dashboard/CmsEditor';
@@ -32,7 +32,7 @@ const Dashboard: React.FC = () => {
   // Simulated Teams Data
   const teamsPosts = [
     { id: 1, user: "Dr. Roberto García", role: "Headmaster", time: "2h ago", text: isEn ? "Welcome back to the second term! Remember to check the updated safety protocols in the Files section." : "¡Bienvenidos al segundo periodo! Recuerden revisar los protocolos de seguridad actualizados en la sección de Archivos.", likes: 12 },
-    { id: 2, user: "Admin System", role: "Security", time: "5h ago", text: isEn ? "New .edu.mx identity integration complete. Your SSO login is now active for all portals." : "Integración de identidad .edu.mx completada. Su inicio de sesión SSO ya está activo para todos los portales.", likes: 45 },
+    { id: 2, user: "Admin System", role: "Security", time: "5h ago", text: isEn ? "New identity integration complete. Your SSO login is now active for all portals." : "Integración de identidad completada. Su inicio de sesión SSO ya está activo para todos los portales.", likes: 45 },
     { id: 3, user: "Sarah Jenkins", role: "Teacher", time: "Yesterday", text: isEn ? "Physics Lab: Please submit your reports by Friday 4PM. No exceptions." : "Lab de Física: Por favor entreguen sus reportes antes del viernes 4PM. Sin excepciones.", likes: 8 }
   ];
 
@@ -44,7 +44,7 @@ const Dashboard: React.FC = () => {
   
   const [originalRole] = useState(location.state?.role || 'admin');
   const [currentRole, setCurrentRole] = useState(location.state?.role || 'admin');
-  const email = location.state?.email || 'admin@colegioids.edu.mx';
+  const email = location.state?.email || 'admin@colegioids.com';
 
   const getTeamsList = () => {
     if (originalRole === 'admin') return [{ id: 'ids', name: "Colegio IDS", sub: "Global Admin", color: "bg-vault-darkBlue" }];
@@ -81,7 +81,7 @@ const Dashboard: React.FC = () => {
   if (currentRole === 'alumni') {
     return (
         <div className="flex flex-col h-screen bg-[#f8fafc] font-sans overflow-hidden">
-            <MicrosoftTopBar 
+            <TopBar 
                 title={isEn ? "Alumni Career Portal" : "Portal de Egresados"}
                 color="#ea580c" isEn={isEn} email={email}
                 isWaffleOpen={isWaffleOpen} setIsWaffleOpen={setIsWaffleOpen}
@@ -131,7 +131,7 @@ const Dashboard: React.FC = () => {
   if (currentRole === 'parent') {
     return (
         <div className="flex flex-col h-screen bg-[#f8fafc] font-sans overflow-hidden">
-            <MicrosoftTopBar 
+            <TopBar 
                 title={isEn ? "Parent Portal" : "Portal de Padres"}
                 color="#10b981" isEn={isEn} email={email}
                 isWaffleOpen={isWaffleOpen} setIsWaffleOpen={setIsWaffleOpen}
@@ -151,8 +151,8 @@ const Dashboard: React.FC = () => {
   if (currentRole === 'admin' && originalRole === 'admin') {
     return (
       <div className="flex flex-col h-screen bg-[#f3f2f1] font-sans overflow-hidden">
-        <MicrosoftTopBar 
-            title="Microsoft 365 admin center" 
+        <TopBar 
+            title={isEn ? "Admin Center" : "Centro de Administración"} 
             isEn={isEn} email={email} 
             isWaffleOpen={isWaffleOpen} setIsWaffleOpen={setIsWaffleOpen}
             isProfileOpen={isProfileOpen} setIsProfileOpen={setIsProfileOpen}
@@ -191,9 +191,8 @@ const Dashboard: React.FC = () => {
 
   return (
     <div className="flex flex-col h-screen bg-white font-sans overflow-hidden">
-      <MicrosoftTopBar 
-        title="Microsoft Teams" color="#464775" 
-        isEn={isEn} email={email}
+      <TopBar
+        title={isEn ? "Teacher Portal" : "Portal Docente"} color="#464775"        isEn={isEn} email={email}
         isWaffleOpen={isWaffleOpen} setIsWaffleOpen={setIsWaffleOpen}
         isProfileOpen={isProfileOpen} setIsProfileOpen={setIsProfileOpen}
         onLogout={() => navigate('/demos/standard/login')}
@@ -306,4 +305,4 @@ const Dashboard: React.FC = () => {
   );
 };
 
-export default Dashboard;
+export default Dashboard;ashboard;

@@ -31,9 +31,8 @@ const Login: React.FC = () => {
     demoBtn: isEn ? "Demo Credentials" : "Credenciales de Demo",
     backBtn: isEn ? "Back to site" : "Volver al sitio",
     infoTitle: isEn ? "Login Simulation" : "Simulación de Inicio",
-    infoDesc: isEn 
-        ? "This is a demonstration of the Microsoft 365 SSO integration. Depending on the credentials used, you will experience a different institutional environment (Admin, Teacher, Student, or Parent)."
-        : "Esta es una demostración de la integración de Microsoft 365. Dependiendo de las credenciales, experimentará un entorno institucional diferente (Admin, Maestro, Alumno o Padre)."
+    infoDesc: isEn
+        ? "This is a demonstration of the login interface. Depending on the credentials used, you will experience a different institutional environment (Admin, Teacher, Student, or Parent)."        : "Esta es una demostración de la integración de inicio de sesión. Dependiendo de las credenciales, experimentará un entorno institucional diferente (Admin, Maestro, Alumno o Padre)."
   };
 
   const handleNext = (e: React.FormEvent) => {
@@ -87,7 +86,7 @@ const Login: React.FC = () => {
             <div className="w-2.5 h-2.5 bg-[#00a4ef]"></div>
             <div className="w-2.5 h-2.5 bg-[#ffb900]"></div>
           </div>
-          <span className="text-xl font-semibold text-gray-500">Microsoft</span>
+          <span className="text-xl font-semibold text-gray-500">Portal Institucional</span>
         </div>
 
         {step === 1 ? (
@@ -142,4 +141,4 @@ const Login: React.FC = () => {
   );
 };
 
-export default Login;
+export default Login;;

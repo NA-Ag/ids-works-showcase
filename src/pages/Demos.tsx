@@ -21,7 +21,7 @@ import { ROICalculator } from '../components/ROICalculator';
 
 const STATUS_MESSAGES = [
   "> ANALIZANDO SUBSISTEMAS...",
-  "> VALIDANDO DOMINIO .edu.mx... OK",
+  "> VALIDANDO DOMINIO INSTITUCIONAL... OK",
   "> ENCRIPTACIÓN DE NUBE... ACTIVA",
   "> INFRAESTRUCTURA LISTA PARA DESPLIEGUE.",
   "> MONITOREO DE IDENTIDAD... 100%",
@@ -182,7 +182,7 @@ export const Demos: React.FC = () => {
                   <Shield className="w-4 h-4 text-vault-blue shrink-0 mt-0.5" /> Estándar Global: Integración nativa con el sistema operativo Windows.
                 </li>
                 <li className="flex items-start gap-3">
-                  <Shield className="w-4 h-4 text-vault-blue shrink-0 mt-0.5" /> Memos, correos y archivos bajo el blindaje de Microsoft Cloud.
+                  <Shield className="w-4 h-4 text-vault-blue shrink-0 mt-0.5" /> Memos, correos y archivos bajo el blindaje local.
                 </li>
               </ul>
             </div>
@@ -206,7 +206,7 @@ export const Demos: React.FC = () => {
             <h3 className="text-2xl font-black text-vault-darkBlue mb-2 uppercase">LITE</h3>
             <div className="text-[10px] font-mono text-vault-blue font-bold uppercase mb-4 tracking-widest">Entrega: 25 Días</div>
             <p className="text-sm text-gray-500 mb-8 flex-grow">
-              Enfoque en velocidad pura y legitimidad institucional. Ideal para validar la eficiencia del dominio .edu.mx y correos oficiales.
+              Enfoque en velocidad pura y legitimidad institucional. Ideal para validar la eficiencia del dominio y correos oficiales.
             </p>
             <div className="pt-6 border-t border-gray-100">
               <Link 
@@ -227,7 +227,7 @@ export const Demos: React.FC = () => {
             <h3 className="text-2xl font-black text-white mb-2 uppercase italic tracking-tight">ESTÁNDAR</h3>
             <div className="text-[10px] font-mono text-vault-yellow font-bold uppercase mb-4 tracking-widest">Entrega: 80 Días</div>
             <p className="text-sm text-blue-100 mb-8 flex-grow leading-relaxed font-light">
-              Infraestructura completa con simulación de autenticación Microsoft, bilingüismo total y arquitectura de aulas virtuales lista para despliegue.
+              Infraestructura completa con bilingüismo total y arquitectura de aulas virtuales lista para despliegue.
             </p>
             <div className="pt-6 border-t border-white/10">
               <Link 

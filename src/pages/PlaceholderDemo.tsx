@@ -16,7 +16,7 @@ export const PlaceholderDemo: React.FC = () => {
     description: isLite 
       ? 'La simulación de identidad básica y despliegue de dominio oficial está siendo procesada.'
       : 'La arquitectura de alta fidelidad con módulos de pago y bases de datos está en fase de despliegue.',
-    status: isLite ? 'VALIDANDO DOMINIO .EDU.MX' : 'CONSTRUYENDO MÓDULOS DE PAGO',
+    status: isLite ? 'VALIDANDO DOMINIO' : 'CONSTRUYENDO MÓDULOS DE PAGO',
     progress: isLite ? '85%' : '40%'
   };
 
@@ -62,7 +62,7 @@ export const PlaceholderDemo: React.FC = () => {
           <div className="flex justify-between items-center pt-4 border-t border-white/5">
             <div className="flex gap-2">
               <div className="w-2 h-2 rounded-full bg-vault-yellow animate-ping"></div>
-              <span className="text-[10px] font-mono text-white/20 uppercase tracking-widest">Sincronizando con Microsoft Tenant...</span>
+              <span className="text-[10px] font-mono text-white/20 uppercase tracking-widest">Sincronizando con base de datos local...</span>
             </div>
           </div>
         </div>
@@ -77,5 +77,7 @@ export const PlaceholderDemo: React.FC = () => {
         </div>
       </div>
     </div>
+  );
+};iv>
   );
 };

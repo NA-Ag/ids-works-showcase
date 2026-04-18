@@ -30,10 +30,10 @@ export interface SchoolConfig {
 export const liteConfigs: Record<'general' | 'kinder', SchoolConfig> = {
   general: {
     name: "Colegio IDS",
-    domain: "colegio-ids.edu.mx",
+    domain: "colegio-ids.com",
     contact: {
       phone: "+52 (55) 0000-0000",
-      email: "admissions@colegio-ids.edu.mx"
+      email: "admissions@colegio-ids.com"
     },
     theme: {
       primaryBgColor: "bg-vault-blue",
@@ -52,16 +52,14 @@ export const liteConfigs: Record<'general' | 'kinder', SchoolConfig> = {
       image: "https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&q=80&w=800",
       badgeText: "VALIDEZ IDS"
     },
-    integrations: {
-      microsoftEntraTenantId: "DEMO_TENANT_ID"
-    }
+    integrations: {}
   },
   kinder: {
     name: "Kinder IDS",
-    domain: "kinder-ids.edu.mx",
+    domain: "kinder-ids.com",
     contact: {
       phone: "+52 (55) 0000-0000",
-      email: "hola@kinder-ids.edu.mx"
+      email: "hola@kinder-ids.com"
     },
     theme: {
       primaryBgColor: "bg-pink-600",
@@ -80,8 +78,6 @@ export const liteConfigs: Record<'general' | 'kinder', SchoolConfig> = {
       image: "https://images.unsplash.com/photo-1587590227264-0ac64ce63ce8?auto=format&fit=crop&q=80&w=800",
       badgeText: "¡Juega y Aprende!"
     },
-    integrations: {
-      microsoftEntraTenantId: "DEMO_TENANT_ID"
-    }
+    integrations: {}
   }
 };

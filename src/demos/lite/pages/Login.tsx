@@ -16,10 +16,9 @@ const Login: React.FC = () => {
   const translations = {
     title: "Iniciar sesión",
     subtitle: "Usar su cuenta de Colegio IDS",
-    emailPlaceholder: "someone@colegioids.edu.mx",
     next: "Siguiente",
     passwordTitle: "Escribir contraseña",
-    passwordPlaceholder: "Contraseña",
+    emailPlaceholder: "someone@colegioids.com",
     signIn: "Iniciar sesión",
     forgot: "¿Olvidó su contraseña?",
     noAccount: "¿No tiene cuenta?",
@@ -29,10 +28,10 @@ const Login: React.FC = () => {
     demoBtn: "Credenciales de Demo",
     backBtn: "Volver al sitio",
     infoTitle: "Simulación de Inicio",
-    infoDesc: "Esta es una demostración de la integración de Microsoft 365. Dependiendo de las credenciales, experimentará un entorno institucional diferente (Admin, Maestro, Alumno o Padre)."
-  };
+    infoDesc: "Esta es una demostración de inicio de sesión. Dependiendo de las credenciales, experimentará un entorno institucional diferente (Admin, Maestro, Alumno o Padre)."
+    };
 
-  const handleNext = (e: React.FormEvent) => {
+    const handleNext = (e: React.FormEvent) => {
     e.preventDefault();
     if (step === 1 && email) {
       setStep(2);
@@ -40,18 +39,18 @@ const Login: React.FC = () => {
       let role = 'student';
       if (email.includes('admin')) role = 'admin';
       if (email.includes('profesor') || email.includes('teacher')) role = 'teacher';
-      if (email.includes('parent') || email.includes('padre')) role = 'parent';
-      navigate('/demos/lite/dashboard', { state: { role, email } });
+      if (email.includes('padre') || email.includes('parent')) role = 'parent';
+
+      onLogin(role as 'student' | 'admin' | 'teacher' | 'parent', email);
     }
-  };
+    };
 
-  const demoAccounts = [
-    { role: "Administrador", email: "admin@colegioids.edu.mx" },
-    { role: "Profesor", email: "profesor@colegioids.edu.mx" },
-    { role: "Alumno", email: "alumno@colegioids.edu.mx" },
-    { role: "Padre de Familia", email: "padre@colegioids.edu.mx" }
-  ];
-
+    const demoAccounts = [
+    { role: "Administrador", email: "admin@colegioids.com" },
+    { role: "Profesor", email: "profesor@colegioids.com" },
+    { role: "Alumno", email: "alumno@colegioids.com" },
+    { role: "Padre de Familia", email: "padre@colegioids.com" }
+    ];
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100 font-sans relative overflow-hidden" style={{
       backgroundImage: 'url("https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&q=80&w=2000")',
@@ -83,7 +82,7 @@ const Login: React.FC = () => {
             <div className="w-2.5 h-2.5 bg-[#00a4ef]"></div>
             <div className="w-2.5 h-2.5 bg-[#ffb900]"></div>
           </div>
-          <span className="text-xl font-semibold text-gray-500">Microsoft</span>
+          <span className="text-xl font-semibold text-gray-500">Portal Institucional</span>
         </div>
 
         {step === 1 ? (

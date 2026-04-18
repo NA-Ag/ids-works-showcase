@@ -33,9 +33,6 @@ export const Header: React.FC = () => {
             <span className="text-2xl font-black tracking-tighter text-white font-sans uppercase leading-none">
               I.D.S <span className="text-vault-yellow">Works</span>
             </span>
-            <span className="text-[10px] font-mono text-blue-200 tracking-[0.2em] leading-none mt-1">
-              SYSTEMS DIV.
-            </span>
           </div>
         </Link>
 
@@ -57,9 +54,6 @@ export const Header: React.FC = () => {
             >
               Demos
             </Link>
-            <a href="#contact" className="text-white/70 hover:text-vault-yellow font-bold text-xs uppercase tracking-widest font-mono transition-colors">
-              Contacto
-            </a>
           </div>
         </nav>
 

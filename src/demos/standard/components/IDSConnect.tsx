@@ -37,7 +37,7 @@ const IDSConnect: React.FC = () => {
                 <span className="text-2xl font-black uppercase tracking-tighter">
                     {language === 'en' ? 'PORTAL LOGIN' : 'INICIAR SESIÓN'}
                 </span>
-                <span className="text-[10px] font-mono font-bold opacity-40 group-hover:opacity-100">Microsoft 365 Integration</span>
+                <span className="text-[10px] font-mono font-bold opacity-40 group-hover:opacity-100">Integración de Sistema</span>
               </div>
             </a>
           </div>

@@ -4,15 +4,15 @@ import {
   Search, Bell, LogOut, Share2, FileText, BookOpen, TrendingUp, RefreshCcw 
 } from 'lucide-react';
 
-interface MicrosoftTopBarProps {
+interface TopBarProps {
   title: string;
   color?: string;
   isEn: boolean;
   email: string;
   isWaffleOpen: boolean;
-  setIsWaffleOpen: (open: boolean) => void;
+  setIsWaffleOpen: (v: boolean) => void;
   isProfileOpen: boolean;
-  setIsProfileOpen: (open: boolean) => void;
+  setIsProfileOpen: (v: boolean) => void;
   onLogout: () => void;
   onAppSwitch: (role: string) => void;
   originalRole: string;
@@ -20,13 +20,13 @@ interface MicrosoftTopBarProps {
   toggleSidebar: () => void;
 }
 
-export const MicrosoftTopBar = ({ 
-    title, color = "#0078d4", isEn, email, 
-    isWaffleOpen, setIsWaffleOpen, 
+export const TopBar = ({
+    title, color = "#0078d4", isEn, email,
+    isWaffleOpen, setIsWaffleOpen,
     isProfileOpen, setIsProfileOpen,
     onLogout, onAppSwitch, originalRole, showToast,
     toggleSidebar
-}: MicrosoftTopBarProps) => {
+}: TopBarProps) => {
   const [searchQuery, setSearchQuery] = useState('');
 
   const handleReset = () => {
@@ -60,7 +60,7 @@ export const MicrosoftTopBar = ({
         {isWaffleOpen && (
             <div className="absolute top-12 left-0 w-72 md:w-80 bg-[#f3f2f1] shadow-2xl border-r border-b border-gray-200 z-[100] animate-fade-in flex flex-col h-[500px]">
                 <div className="p-6 bg-white flex justify-between items-center border-b border-gray-200">
-                    <span className="font-bold text-[#0078d4]">Microsoft 365</span>
+                    <span className="font-bold text-[#0078d4]">Portal Institucional</span>
                     <button onClick={() => setIsWaffleOpen(false)} className="text-gray-400 hover:text-gray-600"><X size={18} /></button>
                 </div>
                 <div className="p-4 grid grid-cols-3 gap-4 overflow-y-auto">

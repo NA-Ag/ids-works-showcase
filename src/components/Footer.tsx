@@ -26,17 +26,16 @@ export const Footer: React.FC = () => {
           <div className="prose prose-slate text-sm text-gray-600 space-y-6 font-medium leading-relaxed">
             {type === 'privacy' ? (
               <>
-                <p className="font-bold text-vault-darkBlue uppercase tracking-widest text-[10px]">I.D.S WORKS - PROTOCOLO DE PRIVACIDAD V1.0</p>
-                <p>En cumplimiento con la normativa mexicana de protección de datos, I.D.S Works informa que la información recabada en nuestro formulario de contacto se utiliza exclusivamente para iniciar la comunicación institucional y el diagnóstico técnico de su proyecto.</p>
-                <p>No almacenamos bases de datos de alumnos ni registros académicos; toda la infraestructura final reside bajo el control absoluto de la institución en su propio ecosistema Microsoft.</p>
-                <p>Para solicitar la eliminación de su información de contacto de nuestros registros, favor de enviar un mensaje a través de los canales oficiales proporcionados durante su proceso de consultoría.</p>
+                <p className="font-bold text-vault-darkBlue uppercase tracking-widest text-[10px]">I.D.S WORKS - PRIVACIDAD DE DATOS</p>
+                <p>En cumplimiento con la normativa mexicana de protección de datos, I.D.S Works informa que nuestro software funciona de manera local (offline). No recolectamos, almacenamos ni procesamos información de alumnos o personal de su institución.</p>
+                <p>Toda la información académica permanece dentro de la red local de su escuela, garantizando privacidad absoluta.</p>
               </>
             ) : (
               <>
-                <p className="font-bold text-vault-darkBlue uppercase tracking-widest text-[10px]">I.D.S WORKS - CONDICIONES DE INFRAESTRUCTURA</p>
-                <p>1. <strong>Modelo de Entrega:</strong> I.D.S Works se compromete a la entrega total del código fuente y acceso administrativo global tras la liquidación del proyecto. La institución asume la responsabilidad total del manejo de sus llaves digitales una vez finalizado el periodo de vigilancia operativa.</p>
-                <p>2. <strong>Propiedad Intelectual:</strong> Al concluir el proceso de Entrega, la institución educativa adquiere la propiedad absoluta del repositorio y la arquitectura implementada, sin cargos de licencia recurrente por parte de I.D.S Works.</p>
-                <p>3. <strong>Servicios de Terceros:</strong> El uso del ecosistema Microsoft 365 está sujeto a los términos y condiciones de Microsoft Corporation. I.D.S Works actúa como integrador y facilitador técnico mas no como proveedor de la nube.</p>
+                <p className="font-bold text-vault-darkBlue uppercase tracking-widest text-[10px]">I.D.S WORKS - LICENCIAS Y CONDICIONES</p>
+                <p>1. <strong>Licencia Perpetua:</strong> Al adquirir un módulo de I.D.S Works, su institución obtiene una licencia de uso perpetuo para el número de equipos locales especificado en la compra. No hay cobros mensuales recurrentes.</p>
+                <p>2. <strong>Propiedad del Software:</strong> La institución educativa tiene el derecho de usar el software de forma indefinida, pero no de revenderlo ni distribuir el código fuente.</p>
+                <p>3. <strong>Soporte:</strong> El software se entrega como un producto terminado ("as is"). Proporcionamos manuales detallados, pero no ofrecemos soporte técnico 24/7 de forma estándar.</p>
               </>
             )}
           </div>
@@ -69,7 +68,6 @@ export const Footer: React.FC = () => {
              <Settings className="w-8 h-8 text-vault-yellow animate-spin-slow" style={{ animationDuration: '10s' }} />
              <div className="flex flex-col">
                <span className="text-xl font-black tracking-tight text-white uppercase">I.D.S <span className="text-vault-yellow">Works</span></span>
-               <span className="text-[10px] text-gray-400 tracking-widest uppercase">Systems Div.</span>
              </div>
           </div>
           
@@ -91,14 +89,8 @@ export const Footer: React.FC = () => {
         
         <div className="border-t border-gray-700 pt-8 flex flex-col md:flex-row justify-between items-center">
           <p className="text-gray-500 text-sm font-mono text-center md:text-left uppercase tracking-tighter">
-            &copy; {new Date().getFullYear()} I.D.S Works México. Control de Calidad Asegurado.
+            &copy; {new Date().getFullYear()} I.D.S Works México.
           </p>
-          <div className="mt-4 md:mt-0 px-4 py-1 bg-emerald-500/10 border border-emerald-500/30 rounded-full flex items-center gap-2">
-            <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></div>
-            <span className="text-[10px] text-emerald-500 font-mono font-bold tracking-widest uppercase">
-              System Status: Online
-            </span>
-          </div>
         </div>
       </div>
     </footer>

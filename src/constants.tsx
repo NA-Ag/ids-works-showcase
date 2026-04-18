@@ -24,14 +24,14 @@ export const SERVICES: ServiceItem[] = [
   },
   {
     id: 's3',
-    title: 'Ecosistema Microsoft 365 - en línea',
-    description: 'Configuración de Teams para clases, tareas y colaboración docente bajo licencias gratuitas A1.',
+    title: 'Ecosistema Integrado',
+    description: 'Configuración para clases, tareas y colaboración docente bajo licencias institucionales.',
     icon: Users
   },
   {
     id: 's4',
-    title: 'Identidad .edu.mx',
-    description: 'Gestión técnica y administrativa para obtener su dominio oficial, requisito para beneficios de Microsoft 365 - en línea.',
+    title: 'Identidad Institucional',
+    description: 'Gestión técnica y administrativa para configurar sus portales educativos oficiales.',
     icon: Fingerprint
   }
 ];
@@ -44,7 +44,7 @@ export const PRICING_TIERS: PricingTier[] = [
     description: 'La base de su identidad digital. Entregamos las llaves y el código; su institución mantiene el control total.',
     features: [
       'Sitio Web Estático (Plantilla IDS)',
-      'Configuración de Identidad .edu.mx',
+      'Configuración de Identidad',
       'Cuenta de Administrador Global MS-365',
       'Entrega Total de Repositorio',
       'Gestión Manual (Cero Rentas)',

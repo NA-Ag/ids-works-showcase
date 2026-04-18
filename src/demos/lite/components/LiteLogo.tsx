@@ -12,7 +12,7 @@ const LiteLogo: React.FC = () => {
           INSTITUCIÓN <span className="text-vault-blue">MX</span>
         </span>
         <span className="text-[8px] font-mono text-gray-400 tracking-[0.2em] leading-none mt-1 uppercase font-bold">
-          ID OFICIAL .EDU.MX
+          ID OFICIAL INSTITUCIONAL
         </span>
       </div>
     </div>

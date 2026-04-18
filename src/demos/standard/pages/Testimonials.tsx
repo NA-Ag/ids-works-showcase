@@ -52,7 +52,7 @@ const Testimonials: React.FC = () => {
             name: "Marcus Thorne",
             role: isEn ? "Alumni Class of 2020" : "Exalumno Generación 2020",
             text: isEn
-                ? "Digital sovereignty is a reality at IDS. Learning to master professional tools like Microsoft 365 early on gave me a significant edge in my Engineering studies."
+                ? "Digital sovereignty is a reality at IDS. Learning to master professional tools early on gave me a significant edge in my Engineering studies."
                 : "La soberanía digital es una realidad en IDS. Aprender a dominar herramientas profesionales me dio una ventaja significativa.",
             category: "Alumni"
         }
