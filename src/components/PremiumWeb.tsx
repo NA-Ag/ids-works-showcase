@@ -9,14 +9,15 @@ export const PremiumWeb: React.FC = () => {
     <Section id="web-templates" variant="light" className="bg-gray-50 border-t border-gray-100">
       <div className="flex flex-col lg:flex-row items-center gap-12">
         <div className="lg:w-1/2 space-y-6">
+          <div className="inline-block bg-vault-blue text-white px-3 py-1 rounded-sm text-[10px] font-bold uppercase tracking-widest mb-2">Servicio Adicional</div>
           <h2 className="text-sm font-mono font-bold text-vault-blue tracking-[0.3em] uppercase mb-3">
-            Servicios a la Medida
+            Desarrollo a la Medida
           </h2>
           <h3 className="text-4xl font-black text-vault-darkBlue uppercase tracking-tighter">
-            Sitios Web <br/> de Alto Impacto
+            Sitios Web Institucionales
           </h3>
           <p className="text-vault-gray leading-relaxed text-lg">
-            Además de nuestro software local, construimos la cara digital de su institución. Entregamos el código fuente de plataformas modernas y eficientes.
+            Como un servicio independiente a nuestro software local, construimos la cara digital de su institución. Entregamos el código fuente de plataformas modernas, eficientes y seguras.
           </p>
           
           <ul className="space-y-4 pt-4">

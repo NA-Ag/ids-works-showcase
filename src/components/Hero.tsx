@@ -222,6 +222,21 @@ export const Hero: React.FC = () => {
         </div>
 
       </div>
+      
+      {/* Trust Badges */}
+      <div className="absolute bottom-0 left-0 w-full bg-white/80 backdrop-blur-md border-t border-gray-200 py-4 z-20">
+        <div className="container mx-auto px-6 flex flex-wrap justify-center items-center gap-8 md:gap-16 text-sm font-bold text-vault-darkBlue uppercase tracking-widest font-mono">
+          <div className="flex items-center gap-2">
+            <Shield className="text-emerald-500 w-5 h-5" /> 100% Desarrollo Mexicano
+          </div>
+          <div className="flex items-center gap-2">
+            <Shield className="text-emerald-500 w-5 h-5" /> Pagos Seguros MercadoPago
+          </div>
+          <div className="flex items-center gap-2">
+            <Shield className="text-emerald-500 w-5 h-5" /> Sin Costos Ocultos
+          </div>
+        </div>
+      </div>
     </div>
   );
 };
