@@ -5,19 +5,19 @@ import { ChevronDown, ChevronUp } from 'lucide-react';
 const FAQS = [
   {
     q: '¿Cómo funciona la licencia de pago único?',
-    a: 'Al comprar un módulo, recibes una llave criptográfica que activa el software de forma permanente para el número de computadoras especificado. No hay caducidad ni pagos mensuales. El software es tuyo.'
+    a: 'Al comprar un módulo, recibe una llave criptográfica que activa el software de forma permanente para el número de computadoras especificado. No hay caducidad ni pagos mensuales. El software es suyo.'
   },
   {
     q: '¿Necesitamos internet para usar el software?',
-    a: 'No. Todo el sistema está diseñado para funcionar en la red local (LAN) de tu escuela. Solo necesitas que las computadoras estén conectadas al mismo módem o switch. Tu información nunca sale del edificio.'
+    a: 'No. Todo el sistema está diseñado para funcionar en la red local (LAN) de su escuela. Solo necesita que las computadoras estén conectadas al mismo módem o switch. Su información nunca sale del edificio.'
   },
   {
     q: '¿Ofrecen soporte técnico 24/7?',
-    a: 'No ofrecemos soporte técnico 24/7 para mantener nuestros precios bajos y sin rentas. Nuestro software se entrega "tal cual" (as is). Proporcionamos un manual detallado de uso y te invitamos a probar los demos de las aplicaciones antes de realizar tu compra para asegurar que cumplen con tus necesidades.'
+    a: 'No ofrecemos soporte técnico 24/7 para mantener nuestros precios bajos y sin rentas. Nuestro software se entrega "tal cual" (as is). Proporcionamos un manual detallado de uso y le invitamos a probar los demos de las aplicaciones antes de realizar su compra para asegurar que cumplen con sus necesidades.'
   },
   {
     q: '¿Qué pasa si cambiamos de computadoras?',
-    a: 'Tu licencia está ligada a tu institución. Si renuevas tu equipo de cómputo, puedes migrar tu base de datos (un simple archivo local) e instalar el software en las máquinas nuevas usando tu misma llave.'
+    a: 'Su licencia está ligada a su institución. Si renueva su equipo de cómputo, puede migrar su base de datos (un simple archivo local) e instalar el software en las máquinas nuevas usando su misma llave.'
   },
   {
     q: '¿Podemos solicitar modificaciones a la medida?',

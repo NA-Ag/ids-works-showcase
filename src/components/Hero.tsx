@@ -60,7 +60,7 @@ export const Hero: React.FC = () => {
           </h1>
 
           <p className="text-lg md:text-xl text-vault-gray font-medium max-w-xl leading-relaxed border-l-4 border-vault-yellow pl-6">
-            Desarrollamos herramientas digitales y software especializado para escuelas. Desde control escolar y finanzas hasta sitios web de alto rendimiento. Pagas una sola vez y el sistema es tuyo, sin ataduras ni suscripciones mensuales.
+            Desarrollamos herramientas digitales y software especializado para escuelas. Desde control escolar y finanzas hasta sitios web de alto rendimiento. Paga una sola vez y el sistema es suyo, sin ataduras ni suscripciones mensuales.
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 pt-4">

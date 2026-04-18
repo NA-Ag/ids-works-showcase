@@ -108,10 +108,10 @@ export const Catalog: React.FC = () => {
           Catálogo de Módulos
         </h2>
         <h3 className="text-4xl font-black text-vault-darkBlue mb-6">
-          Software a tu medida, sin suscripciones
+          Software a su medida, sin suscripciones
         </h3>
         <p className="max-w-2xl mx-auto text-vault-gray">
-          Adquiere únicamente los módulos que tu institución necesita. Licencias perpetuas que funcionan en tu red local sin depender de internet.
+          Adquiera únicamente los módulos que su institución necesita. Licencias perpetuas que funcionan en su red local sin depender de internet.
         </p>
       </div>
 

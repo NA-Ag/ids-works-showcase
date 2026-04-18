@@ -16,26 +16,26 @@ export const PremiumWeb: React.FC = () => {
             Sitios Web <br/> de Alto Impacto
           </h3>
           <p className="text-vault-gray leading-relaxed text-lg">
-            Además de nuestro software local, construimos la cara digital de tu institución. Entregamos el código fuente de plataformas ultrarrápidas y seguras.
+            Además de nuestro software local, construimos la cara digital de su institución. Entregamos el código fuente de plataformas modernas y eficientes.
           </p>
           
           <ul className="space-y-4 pt-4">
             <li className="flex items-center gap-3 text-sm font-bold text-vault-darkBlue">
-              <CheckCircle2 className="text-emerald-500" size={20} /> Tecnología Jamstack (React 19)
+              <CheckCircle2 className="text-emerald-500" size={20} /> Tecnología de última generación
             </li>
             <li className="flex items-center gap-3 text-sm font-bold text-vault-darkBlue">
-              <CheckCircle2 className="text-emerald-500" size={20} /> Tiempos de carga inferiores a 1 segundo
+              <CheckCircle2 className="text-emerald-500" size={20} /> Optimización para tiempos de carga mínimos
             </li>
             <li className="flex items-center gap-3 text-sm font-bold text-vault-darkBlue">
-              <CheckCircle2 className="text-emerald-500" size={20} /> Sin bases de datos vulnerables a hackeos
+              <CheckCircle2 className="text-emerald-500" size={20} /> Arquitectura estática de bajo riesgo
             </li>
             <li className="flex items-center gap-3 text-sm font-bold text-vault-darkBlue">
-              <CheckCircle2 className="text-emerald-500" size={20} /> Entrega total del código repositorio
+              <CheckCircle2 className="text-emerald-500" size={20} /> Entrega total del código fuente
             </li>
           </ul>
 
           <div className="pt-6">
-             <Link to="/demos#demo-selectors" className="inline-flex items-center gap-2 bg-vault-darkBlue text-white px-8 py-4 font-bold uppercase tracking-widest text-xs rounded hover:bg-vault-blue transition-colors">
+             <Link to="/demos" className="inline-flex items-center gap-2 bg-vault-darkBlue text-white px-8 py-4 font-bold uppercase tracking-widest text-xs rounded hover:bg-vault-blue transition-colors">
                Ver Demos de Sitios Web <ArrowRight size={16} />
              </Link>
           </div>
@@ -54,7 +54,7 @@ export const PremiumWeb: React.FC = () => {
                   <span className="text-[10px] text-gray-500 uppercase tracking-widest font-bold font-mono">Pago Único</span>
                 </div>
               </div>
-              <p className="text-gray-600 text-sm">Sitio web de una sola página (Landing Page). Ideal para presencia online profesional y segura con nuestro diseño académico estandarizado. Entregamos el código fuente.</p>
+              <p className="text-gray-600 text-sm">Sitio web de una sola página (Landing Page). Ideal para presencia en línea profesional con nuestro diseño académico estandarizado. Entregamos el código fuente.</p>
            </div>
            
            <div className="bg-white p-8 rounded-lg shadow-xl border-l-4 border-vault-yellow">
