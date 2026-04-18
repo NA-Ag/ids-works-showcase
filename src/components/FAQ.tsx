@@ -13,7 +13,7 @@ const FAQS = [
   },
   {
     q: '¿Ofrecen soporte técnico 24/7?',
-    a: 'No ofrecemos soporte técnico 24/7 para mantener nuestros precios bajos y sin rentas. Nuestro software es "instalar y usar". Entregamos manuales en video y documentación completa. El software está diseñado para no fallar porque no depende de servidores externos.'
+    a: 'No ofrecemos soporte técnico 24/7 para mantener nuestros precios bajos y sin rentas. Nuestro software se entrega "tal cual" (as is). Proporcionamos un manual detallado de uso y te invitamos a probar los demos de las aplicaciones antes de realizar tu compra para asegurar que cumplen con tus necesidades.'
   },
   {
     q: '¿Qué pasa si cambiamos de computadoras?',
@@ -21,7 +21,7 @@ const FAQS = [
   },
   {
     q: '¿Podemos solicitar modificaciones a la medida?',
-    a: 'Nuestros módulos son productos terminados y estandarizados, lo que nos permite ofrecerlos a un costo tan bajo. Por el momento no realizamos desarrollo a la medida por cada escuela.'
+    a: 'Nuestros módulos de software son productos terminados y estandarizados, lo que nos permite ofrecerlos a un costo tan bajo. Por el momento no realizamos desarrollo de software a la medida. Para nuestros Sitios Web a la Medida, entregamos el código fuente y a partir de ese momento es responsabilidad de la institución mantenerlo o modificarlo.'
   }
 ];
 
@@ -32,10 +32,10 @@ export const FAQ: React.FC = () => {
     <Section id="faq" variant="light" className="bg-white">
       <div className="text-center mb-12">
         <h2 className="text-sm font-mono font-bold text-vault-blue tracking-[0.3em] uppercase mb-3">
-          Preguntas Frecuentes
+          FAQ
         </h2>
         <h3 className="text-3xl font-black text-vault-darkBlue">
-          Claridad Absoluta
+          Preguntas Frecuentes
         </h3>
       </div>
 

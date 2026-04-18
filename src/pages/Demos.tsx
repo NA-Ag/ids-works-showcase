@@ -241,34 +241,6 @@ export const Demos: React.FC = () => {
           </div>
         </div>
       </Section>
-
-      {/* 4. FINAL CTA SECTION */}
-      <Section id="final-cta" variant="light" className="bg-white border-t border-gray-100 py-24">
-        <div className="flex flex-col md:flex-row items-center justify-between gap-12 text-white max-w-6xl mx-auto bg-vault-darkBlue/50 p-12 rounded-2xl border border-white/10 shadow-2xl">
-          <div className="md:w-2/3 space-y-6">
-            <h3 className="text-3xl md:text-4xl font-black text-white">¿Su institución está lista para el siguiente paso?</h3>
-            <p className="text-blue-100 text-lg font-medium leading-relaxed">
-              Dé el salto hacia una infraestructura digital blindada y eficiente. Resuelva sus dudas iniciales con nuestros especialistas sin ningún compromiso. (El diseño de arquitectura a medida y pruebas de concepto se cotizan por separado).
-            </p>
-            <div className="flex flex-wrap gap-4 pt-4">
-              <div className="flex items-center gap-2 bg-vault-darkBlue px-4 py-2 rounded-lg text-xs font-bold text-blue-100 border border-white/5">
-                <CheckCircle2 size={16} className="text-vault-yellow" /> Rendimiento Superior
-              </div>
-              <div className="flex items-center gap-2 bg-vault-darkBlue px-4 py-2 rounded-lg text-xs font-bold text-blue-100 border border-white/5">
-                <CheckCircle2 size={16} className="text-vault-yellow" /> Datos en su Control
-              </div>
-              <div className="flex items-center gap-2 bg-vault-darkBlue px-4 py-2 rounded-lg text-xs font-bold text-blue-100 border border-white/5">
-                <CheckCircle2 size={16} className="text-vault-yellow" /> Soporte Especializado
-              </div>
-            </div>
-          </div>
-          <div className="md:w-1/3 w-full flex justify-end">
-            <a href="/#contact" className="w-full md:w-auto px-8 py-5 bg-vault-yellow text-vault-darkBlue hover:bg-yellow-300 hover:scale-105 active:scale-95 transition-all font-black uppercase tracking-wider text-sm text-center block rounded-xl shadow-lg">
-              Iniciar Consultoría
-            </a>
-          </div>
-        </div>
-      </Section>
     </div>
   );
 };

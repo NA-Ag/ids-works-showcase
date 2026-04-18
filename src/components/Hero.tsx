@@ -52,20 +52,20 @@ export const Hero: React.FC = () => {
         {/* Text Content */}
         <div className="md:w-1/2 space-y-8">
           <h1 className="text-5xl md:text-7xl font-black text-vault-darkBlue leading-[0.9]">
-            INFRAESTRUCTURA <br />
+            SOFTWARE <br />
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-vault-blue to-blue-400">
-              EDUCATIVA
+              EDUCATIVO
             </span> <br />
-            PARA MÉXICO.
+            SIN RENTAS.
           </h1>
 
           <p className="text-lg md:text-xl text-vault-gray font-medium max-w-xl leading-relaxed border-l-4 border-vault-yellow pl-6">
-            Revolucionando la gestión académica para un mañana digital más brillante. Entregamos soluciones de arquitectura estática que eliminan la obsolescencia técnica.
+            Desarrollamos herramientas digitales y software especializado para escuelas. Desde control escolar y finanzas hasta sitios web de alto rendimiento. Pagas una sola vez y el sistema es tuyo, sin ataduras ni suscripciones mensuales.
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 pt-4">
-            <Button variant="primary" onClick={() => document.getElementById('pricing')?.scrollIntoView({ behavior: 'smooth'})}>
-              Ver Planes de Inversión
+            <Button variant="primary" onClick={() => document.getElementById('catalog')?.scrollIntoView({ behavior: 'smooth'})}>
+              Apps disponibles
             </Button>
             <Link to="/demos" className="flex items-center justify-center gap-2 group bg-white border-2 border-vault-blue px-8 py-3 rounded-sm text-vault-darkBlue font-bold text-sm uppercase tracking-widest hover:bg-vault-blue hover:text-white transition-all">
               Explorar Demos IDS <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />

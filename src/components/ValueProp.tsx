@@ -27,30 +27,30 @@ const BENEFITS = [
 
 export const ValueProp: React.FC = () => {
   return (
-    <Section id="value-prop" variant="dark">
+    <Section id="value-prop" variant="light" className="bg-blue-50">
       <div className="text-center mb-16">
-        <h2 className="text-sm font-mono font-bold text-vault-yellow tracking-[0.3em] uppercase mb-3">
+        <h2 className="text-sm font-mono font-bold text-vault-blue tracking-[0.3em] uppercase mb-3">
           ¿Por qué software offline?
         </h2>
-        <h3 className="text-4xl font-black text-white mb-6">
+        <h3 className="text-4xl font-black text-vault-darkBlue mb-6">
           Soberanía Digital para tu Escuela
         </h3>
-        <p className="max-w-2xl mx-auto text-blue-100">
+        <p className="max-w-2xl mx-auto text-vault-gray">
           La nube no siempre es la mejor respuesta. Para las instituciones educativas, el control local de los datos y la eliminación de costos recurrentes son ventajas estratégicas inigualables.
         </p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto">
         {BENEFITS.map((benefit, index) => (
-          <div key={index} className="bg-vault-darkBlue/50 border border-vault-blue/30 p-8 rounded-lg flex gap-6 hover:border-vault-yellow transition-colors">
+          <div key={index} className="bg-white border border-gray-200 p-8 rounded-lg flex gap-6 hover:border-vault-blue transition-colors shadow-sm">
             <div className="shrink-0">
-              <div className="bg-vault-blue p-3 rounded-full">
-                <benefit.icon className="w-8 h-8 text-white" />
+              <div className="bg-blue-50 p-3 rounded-full">
+                <benefit.icon className="w-8 h-8 text-vault-blue" />
               </div>
             </div>
             <div>
-              <h4 className="text-xl font-bold text-white mb-2">{benefit.title}</h4>
-              <p className="text-blue-200 text-sm leading-relaxed">
+              <h4 className="text-xl font-bold text-vault-darkBlue mb-2">{benefit.title}</h4>
+              <p className="text-gray-600 text-sm leading-relaxed">
                 {benefit.description}
               </p>
             </div>
