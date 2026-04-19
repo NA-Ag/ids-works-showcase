@@ -3,9 +3,8 @@ import { Search, Filter, MoreVertical, X } from 'lucide-react';
 import { useData } from '../context/DataContext';
 
 export const DirectoryView: React.FC = () => {
-  const { students, addStudent, toggleStudentStatus, addActivity } = useData();
+  const { students, addStudent, toggleStudentStatus, addActivity, isNewStudentModalOpen, setIsNewStudentModalOpen } = useData();
   const [searchTerm, setSearchQuery] = useState('');
-  const [isModalOpen, setIsModalOpen] = useState(false);
 
   // Form state
   const [formData, setFormData] = useState({
