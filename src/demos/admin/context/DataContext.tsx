@@ -67,6 +67,7 @@ const MOCK_CLIENTS: ClientDevice[] = [
 
 export const DataProvider: React.FC<{ children: React.ReactNode, mode?: 'mock' | 'api' }> = ({ children, mode = 'mock' }) => {
   const [isServerRunning, setIsServerRunning] = useState(true);
+  const [isNewStudentModalOpen, setIsNewStudentModalOpen] = useState(false);
   const [students, setStudents] = useState<Student[]>(MOCK_STUDENTS);
   const [activities, setActivities] = useState<Activity[]>(MOCK_ACTIVITIES);
   const [connectedClients, setConnectedClients] = useState<ClientDevice[]>(MOCK_CLIENTS);
