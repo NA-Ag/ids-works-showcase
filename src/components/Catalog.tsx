@@ -7,7 +7,7 @@ import {
   Stethoscope, MonitorPlay, CheckCircle2
 } from 'lucide-react';
 
-const MODULES = [
+export const MODULES = [
   {
     id: 'admin',
     icon: Users,

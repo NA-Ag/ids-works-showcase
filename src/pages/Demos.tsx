@@ -318,28 +318,15 @@ export const Demos: React.FC = () => {
         )}
 
         {activeDemoTab === 'software' && (
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto animate-fade-in">
-            {/* Software Placeholders */}
-            <div className="bg-white border-2 border-gray-100 p-8 flex flex-col items-center text-center opacity-60 grayscale cursor-not-allowed">
-              <Users className="w-12 h-12 text-gray-400 mb-4" />
-              <h3 className="text-xl font-black text-vault-darkBlue mb-2">Administración Escolar</h3>
-              <p className="text-xs text-gray-500 mb-4">Módulo de control de alumnos.</p>
-              <button disabled className="bg-gray-200 text-gray-500 py-2 px-4 rounded-sm font-bold uppercase tracking-widest text-xs">Demo Próximamente</button>
-            </div>
-            
-            <div className="bg-white border-2 border-gray-100 p-8 flex flex-col items-center text-center opacity-60 grayscale cursor-not-allowed">
-              <Coffee className="w-12 h-12 text-gray-400 mb-4" />
-              <h3 className="text-xl font-black text-vault-darkBlue mb-2">Punto de Venta</h3>
-              <p className="text-xs text-gray-500 mb-4">Gestión de cafetería local.</p>
-              <button disabled className="bg-gray-200 text-gray-500 py-2 px-4 rounded-sm font-bold uppercase tracking-widest text-xs">Demo Próximamente</button>
-            </div>
-
-            <div className="bg-white border-2 border-gray-100 p-8 flex flex-col items-center text-center opacity-60 grayscale cursor-not-allowed">
-              <Database className="w-12 h-12 text-gray-400 mb-4" />
-              <h3 className="text-xl font-black text-vault-darkBlue mb-2">Finanzas</h3>
-              <p className="text-xs text-gray-500 mb-4">Control de colegiaturas.</p>
-              <button disabled className="bg-gray-200 text-gray-500 py-2 px-4 rounded-sm font-bold uppercase tracking-widest text-xs">Demo Próximamente</button>
-            </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto animate-fade-in">
+            {MODULES.map((mod) => (
+              <div key={mod.id} className="bg-white border-2 border-gray-100 p-8 flex flex-col items-center text-center opacity-60 grayscale cursor-not-allowed transition-all hover:opacity-80">
+                <mod.icon className="w-12 h-12 text-gray-400 mb-4" />
+                <h3 className="text-xl font-black text-vault-darkBlue mb-2">{mod.title}</h3>
+                <p className="text-xs text-gray-500 mb-4">{mod.focus}</p>
+                <button disabled className="bg-gray-200 text-gray-500 py-2 px-4 rounded-sm font-bold uppercase tracking-widest text-xs mt-auto">Demo Próximamente</button>
+              </div>
+            ))}
           </div>
         )}
       </Section>
