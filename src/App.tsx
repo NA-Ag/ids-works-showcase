@@ -7,11 +7,13 @@ import { Demos } from './pages/Demos';
 import { StandardDemo } from './pages/StandardDemo';
 import { LiteDemo } from './pages/LiteDemo';
 import { BrochureViewer } from './pages/BrochureViewer';
+import { AdminApp } from './demos/admin/AdminApp';
 
 function AppContent() {
   const location = useLocation();
   const isDemo = location.pathname.startsWith('/demos/standard') || 
-                 location.pathname.startsWith('/demos/lite');
+                 location.pathname.startsWith('/demos/lite') ||
+                 location.pathname.startsWith('/demos/admin');
   const isProtectedRoute = location.pathname.endsWith('/login') || location.pathname.endsWith('/dashboard');
 
   return (
@@ -24,6 +26,7 @@ function AppContent() {
           <Route path="/brochure" element={<BrochureViewer />} />
           <Route path="/demos/standard/*" element={<StandardDemo />} />
           <Route path="/demos/lite/*" element={<LiteDemo />} />
+          <Route path="/demos/admin/*" element={<AdminApp />} />
         </Routes>
       </main>
       {!isDemo && <Footer />}

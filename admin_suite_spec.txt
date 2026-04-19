@@ -1,0 +1,34 @@
+# Admin Suite Module Specification
+
+## Core Objective
+Build a robust, offline-first School Administration System (SIS/ERP) focused on student registration, enrollment tracking, parent directories, and generation of internal documents.
+
+## Pricing & Value Justification ($15,000 MXN)
+The $15,000 MXN price tag for a 20-PC perpetual license is highly competitive when compared to recurring SaaS fees.
+- Traditional cloud-based school management systems charge monthly per-student or per-user fees, which can quickly exceed $50,000+ MXN annually for a medium-sized school.
+- This module completely eliminates recurring costs. It runs on the school's existing local network (LAN) without requiring internet access.
+- Provides absolute data sovereignty and privacy, a growing concern for Mexican educational institutions.
+- Generates required official internal documents (like SEP compliance forms, enrollment certificates) instantly without relying on a slow internet connection.
+
+## Technical Architecture
+- **Framework:** Electron.js
+- **Frontend:** React 19, TypeScript, Tailwind CSS, Lucide React (matching the marketing site's design system).
+- **Backend/Local Server:** Node.js (Express) running on the designated "Host" machine to serve APIs to other computers on the LAN.
+- **Database:** SQLite (local file-based database, requires no installation or maintenance by the school IT staff).
+- **Target Platforms:** Windows and Linux ONLY. 
+  - *Note: macOS is explicitly excluded to avoid Apple's restrictive developer certification processes, code-signing fees, and gatekeeper hurdles. Schools predominantly use Windows for administrative tasks anyway.*
+
+## Open Source Research & Alternatives
+Before building, we analyzed existing open-source solutions to understand feature parity and data structures:
+1. **Frappe Education (ERPNext):** Python-based. Extremely comprehensive but very heavy and requires complex server setup (MariaDB, Redis). Too complicated for a simple "install and go" offline experience.
+2. **RosarioSIS:** PHP/PostgreSQL. Lightweight and popular for K-12, but still requires a web server stack (LAMP/LEMP). Good reference for data schema (demographics, attendance, grades).
+3. **Gibbon:** PHP/MySQL. Highly flexible with plugins, but again, relies on a web server stack.
+
+*Conclusion:* Existing open-source tools require IT knowledge to set up servers and databases. Our Electron + SQLite + Node.js LAN approach provides the power of a web app with the zero-config installation of a desktop `.exe`, giving us a massive competitive advantage in ease-of-use for non-technical school staff.
+
+## Key Features for MVP (Minimum Viable Product)
+1. **Student Management:** Add, edit, and search student profiles (demographics, medical alerts, assigned groups).
+2. **Parent/Guardian Directory:** Link students to parent profiles with contact information.
+3. **Enrollment/Groups:** Assign students to academic years, grades, and specific groups (e.g., "1A", "3B").
+4. **Document Generation:** Generate printable PDF certificates of enrollment, contact sheets, and basic administrative letters.
+5. **Local Network Host:** A settings panel to start the local server and display the IPv4 address for other client PCs to connect to.

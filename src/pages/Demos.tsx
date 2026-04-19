@@ -321,11 +321,34 @@ export const Demos: React.FC = () => {
         {activeDemoTab === 'software' && (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto animate-fade-in">
             {MODULES.map((mod) => (
-              <div key={mod.id} className="bg-white border-2 border-gray-100 p-8 flex flex-col items-center text-center opacity-60 grayscale cursor-not-allowed transition-all hover:opacity-80">
-                <mod.icon className="w-12 h-12 text-gray-400 mb-4" />
-                <h3 className="text-xl font-black text-vault-darkBlue mb-2">{mod.title}</h3>
-                <p className="text-xs text-gray-500 mb-4">{mod.focus}</p>
-                <button disabled className="bg-gray-200 text-gray-500 py-2 px-4 rounded-sm font-bold uppercase tracking-widest text-xs mt-auto">Demo Próximamente</button>
+              <div 
+                key={mod.id} 
+                className={`bg-white border-2 p-8 flex flex-col items-center text-center transition-all ${
+                  mod.id === 'admin' 
+                    ? 'border-vault-blue shadow-xl hover:-translate-y-1' 
+                    : 'border-gray-100 opacity-60 grayscale cursor-not-allowed hover:opacity-80'
+                }`}
+              >
+                <div className={`p-4 rounded-full mb-4 ${mod.id === 'admin' ? 'bg-blue-50' : ''}`}>
+                  <mod.icon className={`w-12 h-12 ${mod.id === 'admin' ? 'text-vault-blue' : 'text-gray-400'}`} />
+                </div>
+                <h3 className={`text-xl font-black mb-2 ${mod.id === 'admin' ? 'text-vault-darkBlue' : 'text-vault-darkBlue'}`}>{mod.title}</h3>
+                <p className="text-xs text-gray-500 mb-6 flex-grow">{mod.focus}</p>
+                
+                {mod.id === 'admin' ? (
+                  <Link 
+                    to="/demos/admin" 
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="w-full bg-vault-yellow text-vault-darkBlue py-3 px-4 rounded-sm font-black uppercase tracking-widest text-xs hover:bg-vault-darkBlue hover:text-white transition-colors shadow-md flex justify-center items-center gap-2 mt-auto"
+                  >
+                    Lanzar Demo <ExternalLink size={14} />
+                  </Link>
+                ) : (
+                  <button disabled className="w-full bg-gray-200 text-gray-500 py-3 px-4 rounded-sm font-bold uppercase tracking-widest text-xs mt-auto">
+                    Demo Próximamente
+                  </button>
+                )}
               </div>
             ))}
           </div>
