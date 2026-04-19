@@ -1,9 +1,22 @@
-import React from 'react';
-import { Server, ShieldCheck, Lock, Activity, RefreshCw } from 'lucide-react';
+import React, { useState } from 'react';
+import { Server, ShieldCheck, Lock, Activity, RefreshCw, Loader2 } from 'lucide-react';
 import { useData } from '../context/DataContext';
 
 export const NetworkView: React.FC = () => {
   const { isServerRunning, setIsServerRunning, connectedClients } = useData();
+  const [isBooting, setIsBooting] = useState(false);
+
+  const handleToggle = () => {
+    if (isServerRunning) {
+      setIsServerRunning(false);
+    } else {
+      setIsBooting(true);
+      setTimeout(() => {
+        setIsServerRunning(true);
+        setIsBooting(false);
+      }, 1500);
+    }
+  };
 
   return (
     <div className="animate-fade-in space-y-6">
@@ -19,14 +32,17 @@ export const NetworkView: React.FC = () => {
         </div>
         <div className="relative z-10 shrink-0">
           <button 
-            onClick={() => setIsServerRunning(!isServerRunning)}
-            className={`px-8 py-3 rounded-lg font-black uppercase tracking-widest text-xs transition-all shadow-lg flex items-center gap-2 ${
+            onClick={handleToggle}
+            disabled={isBooting}
+            className={`px-8 py-3 rounded-lg font-black uppercase tracking-widest text-xs transition-all shadow-lg flex items-center gap-2 disabled:opacity-50 ${
               isServerRunning 
                 ? 'bg-red-500 hover:bg-red-600 text-white' 
                 : 'bg-emerald-500 hover:bg-emerald-600 text-white'
             }`}
           >
-            {isServerRunning ? (
+            {isBooting ? (
+              <>Iniciando... <Loader2 size={16} className="animate-spin" /></>
+            ) : isServerRunning ? (
               <>Detener Servidor <Server size={16} /></>
             ) : (
               <>Iniciar Servidor <Server size={16} /></>

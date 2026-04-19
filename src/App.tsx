@@ -7,7 +7,8 @@ import { Demos } from './pages/Demos';
 import { StandardDemo } from './pages/StandardDemo';
 import { LiteDemo } from './pages/LiteDemo';
 import { BrochureViewer } from './pages/BrochureViewer';
-import { AdminApp } from './demos/admin/AdminApp';
+import { AdminApp } from './demos/admin/App';
+import { DataProvider } from './demos/admin/context/DataContext';
 
 function AppContent() {
   const location = useLocation();
@@ -26,7 +27,11 @@ function AppContent() {
           <Route path="/brochure" element={<BrochureViewer />} />
           <Route path="/demos/standard/*" element={<StandardDemo />} />
           <Route path="/demos/lite/*" element={<LiteDemo />} />
-          <Route path="/demos/admin/*" element={<AdminApp />} />
+          <Route path="/demos/admin/*" element={
+            <DataProvider mode="mock">
+              <AdminApp />
+            </DataProvider>
+          } />
         </Routes>
       </main>
       {!isDemo && <Footer />}

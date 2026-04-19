@@ -1,8 +1,22 @@
 import React, { useState } from 'react';
-import { Server, ShieldCheck, Lock, Activity, RefreshCw } from 'lucide-react';
+import { Server, ShieldCheck, Lock, Activity, RefreshCw, Loader2 } from 'lucide-react';
+import { useData } from '../context/DataContext';
 
 export const NetworkView: React.FC = () => {
-  const [isServerRunning, setIsServerRunning] = useState(true);
+  const { isServerRunning, setIsServerRunning, connectedClients } = useData();
+  const [isBooting, setIsBooting] = useState(false);
+
+  const handleToggle = () => {
+    if (isServerRunning) {
+      setIsServerRunning(false);
+    } else {
+      setIsBooting(true);
+      setTimeout(() => {
+        setIsServerRunning(true);
+        setIsBooting(false);
+      }, 1500);
+    }
+  };
 
   return (
     <div className="animate-fade-in space-y-6">
@@ -18,14 +32,17 @@ export const NetworkView: React.FC = () => {
         </div>
         <div className="relative z-10 shrink-0">
           <button 
-            onClick={() => setIsServerRunning(!isServerRunning)}
-            className={`px-8 py-3 rounded-lg font-black uppercase tracking-widest text-xs transition-all shadow-lg flex items-center gap-2 ${
+            onClick={handleToggle}
+            disabled={isBooting}
+            className={`px-8 py-3 rounded-lg font-black uppercase tracking-widest text-xs transition-all shadow-lg flex items-center gap-2 disabled:opacity-50 ${
               isServerRunning 
                 ? 'bg-red-500 hover:bg-red-600 text-white' 
                 : 'bg-emerald-500 hover:bg-emerald-600 text-white'
             }`}
           >
-            {isServerRunning ? (
+            {isBooting ? (
+              <>Iniciando... <Loader2 size={16} className="animate-spin" /></>
+            ) : isServerRunning ? (
               <>Detener Servidor <Server size={16} /></>
             ) : (
               <>Iniciar Servidor <Server size={16} /></>
@@ -72,11 +89,7 @@ export const NetworkView: React.FC = () => {
           
           {isServerRunning ? (
             <div className="space-y-3">
-              {[
-                { ip: '192.168.1.112', name: 'PC-Caja-01', type: 'Finanzas', time: '08:30 AM' },
-                { ip: '192.168.1.115', name: 'MacBook-Dir', type: 'Dirección', time: '09:15 AM' },
-                { ip: '192.168.1.120', name: 'PC-Prefectura', type: 'Control Escolar', time: '09:45 AM' },
-              ].map((client, i) => (
+              {connectedClients.map((client, i) => (
                 <div key={i} className="flex items-center justify-between p-3 border border-gray-100 rounded-lg hover:border-vault-blue/30 transition-colors">
                   <div className="flex items-center gap-3">
                     <div className="bg-blue-50 p-2 rounded text-vault-blue"><Lock size={14} /></div>

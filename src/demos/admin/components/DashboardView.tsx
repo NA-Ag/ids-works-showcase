@@ -1,7 +1,29 @@
-import React from 'react';
-import { Users, GraduationCap, AlertCircle, FileText, Download } from 'lucide-react';
+import React, { useState } from 'react';
+import { Users, GraduationCap, AlertCircle, FileText, Download, Loader2 } from 'lucide-react';
+import { useData } from '../context/DataContext';
 
 export const DashboardView: React.FC = () => {
+  const { stats, activities, setIsNewStudentModalOpen, addActivity } = useData();
+  const [isGeneratingDoc, setIsGeneratingDoc] = useState(false);
+
+  const handleGenerateDocument = () => {
+    setIsGeneratingDoc(true);
+    setTimeout(() => {
+      setIsGeneratingDoc(false);
+      addActivity("Constancia de Estudios (Batch) generada", "doc");
+      // Simulate opening a printable PDF containing QR codes
+      const printWindow = window.open('', '_blank');
+      if (printWindow) {
+        printWindow.document.write('<html><head><title>Constancia SEP</title></head><body style="font-family: sans-serif; padding: 40px;"><h2>Constancia de Estudios (Vista Previa)</h2><p>Este documento es generado offline y cuenta con un código QR seguro para validación local.</p><button onclick="window.print()">Imprimir Constancia</button></body></html>');
+        printWindow.document.close();
+      }
+    }, 1500);
+  };
+
+  const handleManualPayment = () => {
+    addActivity("Cobro de colegiatura registrado (Caja 01)", "finance");
+  };
+
   return (
     <div className="space-y-6 animate-fade-in">
       {/* Top Stats */}
@@ -9,7 +31,7 @@ export const DashboardView: React.FC = () => {
         <div className="bg-white p-6 rounded-xl border border-gray-100 shadow-sm flex items-center justify-between">
           <div>
             <p className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-1">Alumnos Activos</p>
-            <h3 className="text-3xl font-black text-vault-darkBlue">1,248</h3>
+            <h3 className="text-3xl font-black text-vault-darkBlue">{stats.activeStudents}</h3>
           </div>
           <div className="w-12 h-12 rounded-full bg-blue-50 text-vault-blue flex items-center justify-center">
             <Users size={24} />
@@ -18,7 +40,7 @@ export const DashboardView: React.FC = () => {
         <div className="bg-white p-6 rounded-xl border border-gray-100 shadow-sm flex items-center justify-between">
           <div>
             <p className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-1">Personal Docente</p>
-            <h3 className="text-3xl font-black text-vault-darkBlue">84</h3>
+            <h3 className="text-3xl font-black text-vault-darkBlue">{stats.staff}</h3>
           </div>
           <div className="w-12 h-12 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center">
             <GraduationCap size={24} />
@@ -27,7 +49,7 @@ export const DashboardView: React.FC = () => {
         <div className="bg-white p-6 rounded-xl border border-gray-100 shadow-sm flex items-center justify-between">
           <div>
             <p className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-1">Inscripciones (2026)</p>
-            <h3 className="text-3xl font-black text-vault-darkBlue">89%</h3>
+            <h3 className="text-3xl font-black text-vault-darkBlue">{stats.enrollmentPercentage}</h3>
           </div>
           <div className="w-12 h-12 rounded-full bg-yellow-50 text-yellow-600 flex items-center justify-center">
             <FileText size={24} />
@@ -36,7 +58,7 @@ export const DashboardView: React.FC = () => {
         <div className="bg-white p-6 rounded-xl border border-red-100 shadow-sm flex items-center justify-between">
           <div>
             <p className="text-xs font-bold text-red-500 uppercase tracking-widest mb-1">Ausencias Hoy</p>
-            <h3 className="text-3xl font-black text-red-600">12</h3>
+            <h3 className="text-3xl font-black text-red-600">{stats.absencesToday}</h3>
           </div>
           <div className="w-12 h-12 rounded-full bg-red-50 text-red-500 flex items-center justify-center">
             <AlertCircle size={24} />
@@ -49,16 +71,33 @@ export const DashboardView: React.FC = () => {
         <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-6">
           <h3 className="text-sm font-bold text-vault-darkBlue uppercase tracking-widest mb-6">Acciones Rápidas</h3>
           <div className="space-y-3">
-            <button className="w-full text-left px-4 py-3 bg-gray-50 hover:bg-vault-blue hover:text-white rounded-lg font-bold transition-colors">
+            <button 
+              onClick={() => setIsNewStudentModalOpen(true)}
+              className="w-full text-left px-4 py-3 bg-gray-50 hover:bg-vault-blue hover:text-white rounded-lg font-bold transition-colors"
+            >
               + Nuevo Alumno
             </button>
-            <button className="w-full text-left px-4 py-3 bg-gray-50 hover:bg-vault-blue hover:text-white rounded-lg font-bold transition-colors">
+            <button 
+              onClick={handleManualPayment}
+              className="w-full text-left px-4 py-3 bg-gray-50 hover:bg-vault-blue hover:text-white rounded-lg font-bold transition-colors"
+            >
               + Registrar Pago Manual
             </button>
-            <button className="w-full text-left px-4 py-3 bg-gray-50 hover:bg-vault-blue hover:text-white rounded-lg font-bold transition-colors flex justify-between items-center">
-              Generar Constancia SEP <Download size={16} />
+            <button 
+              onClick={handleGenerateDocument}
+              disabled={isGeneratingDoc}
+              className="w-full text-left px-4 py-3 bg-gray-50 hover:bg-vault-blue hover:text-white rounded-lg font-bold transition-colors flex justify-between items-center disabled:opacity-50"
+            >
+              {isGeneratingDoc ? (
+                <>Generando PDF... <Loader2 size={16} className="animate-spin" /></>
+              ) : (
+                <>Generar Constancia SEP <Download size={16} /></>
+              )}
             </button>
-            <button className="w-full text-left px-4 py-3 bg-gray-50 hover:bg-vault-blue hover:text-white rounded-lg font-bold transition-colors flex justify-between items-center">
+            <button 
+              onClick={() => addActivity("Lista de asistencia exportada a CSV", "doc")}
+              className="w-full text-left px-4 py-3 bg-gray-50 hover:bg-vault-blue hover:text-white rounded-lg font-bold transition-colors flex justify-between items-center"
+            >
               Exportar Lista de Asistencia <Download size={16} />
             </button>
           </div>
@@ -68,12 +107,7 @@ export const DashboardView: React.FC = () => {
         <div className="lg:col-span-2 bg-white rounded-xl border border-gray-100 shadow-sm p-6">
           <h3 className="text-sm font-bold text-vault-darkBlue uppercase tracking-widest mb-6">Actividad Reciente en Red Local</h3>
           <div className="space-y-6">
-            {[
-              { id: 1, action: "Alumno 'Ana García' registrado", user: "Control Escolar", time: "Hace 5 minutos", type: "add" },
-              { id: 2, action: "Constancia de Estudios generada", user: "Dirección", time: "Hace 15 minutos", type: "doc" },
-              { id: 3, action: "Calificaciones de 3º B actualizadas", user: "Profesor Martínez", time: "Hace 1 hora", type: "edit" },
-              { id: 4, action: "Cobro de colegiatura registrado", user: "Caja Principal", time: "Hace 2 horas", type: "finance" },
-            ].map(activity => (
+            {activities.map(activity => (
               <div key={activity.id} className="flex items-start gap-4">
                 <div className={`w-2 h-2 mt-2 rounded-full ${activity.type === 'add' ? 'bg-emerald-500' : activity.type === 'doc' ? 'bg-blue-500' : activity.type === 'finance' ? 'bg-yellow-500' : 'bg-gray-400'}`}></div>
                 <div>

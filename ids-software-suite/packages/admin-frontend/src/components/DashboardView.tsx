@@ -1,9 +1,28 @@
-import React from 'react';
-import { Users, GraduationCap, AlertCircle, FileText, Download } from 'lucide-react';
+import React, { useState } from 'react';
+import { Users, GraduationCap, AlertCircle, FileText, Download, Loader2 } from 'lucide-react';
 import { useData } from '../context/DataContext';
 
 export const DashboardView: React.FC = () => {
-  const { stats, activities } = useData();
+  const { stats, activities, setIsNewStudentModalOpen, addActivity } = useData();
+  const [isGeneratingDoc, setIsGeneratingDoc] = useState(false);
+
+  const handleGenerateDocument = () => {
+    setIsGeneratingDoc(true);
+    setTimeout(() => {
+      setIsGeneratingDoc(false);
+      addActivity("Constancia de Estudios (Batch) generada", "doc");
+      // Simulate opening a printable PDF containing QR codes
+      const printWindow = window.open('', '_blank');
+      if (printWindow) {
+        printWindow.document.write('<html><head><title>Constancia SEP</title></head><body style="font-family: sans-serif; padding: 40px;"><h2>Constancia de Estudios (Vista Previa)</h2><p>Este documento es generado offline y cuenta con un código QR seguro para validación local.</p><button onclick="window.print()">Imprimir Constancia</button></body></html>');
+        printWindow.document.close();
+      }
+    }, 1500);
+  };
+
+  const handleManualPayment = () => {
+    addActivity("Cobro de colegiatura registrado (Caja 01)", "finance");
+  };
 
   return (
     <div className="space-y-6 animate-fade-in">
@@ -52,16 +71,33 @@ export const DashboardView: React.FC = () => {
         <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-6">
           <h3 className="text-sm font-bold text-vault-darkBlue uppercase tracking-widest mb-6">Acciones Rápidas</h3>
           <div className="space-y-3">
-            <button className="w-full text-left px-4 py-3 bg-gray-50 hover:bg-vault-blue hover:text-white rounded-lg font-bold transition-colors">
+            <button 
+              onClick={() => setIsNewStudentModalOpen(true)}
+              className="w-full text-left px-4 py-3 bg-gray-50 hover:bg-vault-blue hover:text-white rounded-lg font-bold transition-colors"
+            >
               + Nuevo Alumno
             </button>
-            <button className="w-full text-left px-4 py-3 bg-gray-50 hover:bg-vault-blue hover:text-white rounded-lg font-bold transition-colors">
+            <button 
+              onClick={handleManualPayment}
+              className="w-full text-left px-4 py-3 bg-gray-50 hover:bg-vault-blue hover:text-white rounded-lg font-bold transition-colors"
+            >
               + Registrar Pago Manual
             </button>
-            <button className="w-full text-left px-4 py-3 bg-gray-50 hover:bg-vault-blue hover:text-white rounded-lg font-bold transition-colors flex justify-between items-center">
-              Generar Constancia SEP <Download size={16} />
+            <button 
+              onClick={handleGenerateDocument}
+              disabled={isGeneratingDoc}
+              className="w-full text-left px-4 py-3 bg-gray-50 hover:bg-vault-blue hover:text-white rounded-lg font-bold transition-colors flex justify-between items-center disabled:opacity-50"
+            >
+              {isGeneratingDoc ? (
+                <>Generando PDF... <Loader2 size={16} className="animate-spin" /></>
+              ) : (
+                <>Generar Constancia SEP <Download size={16} /></>
+              )}
             </button>
-            <button className="w-full text-left px-4 py-3 bg-gray-50 hover:bg-vault-blue hover:text-white rounded-lg font-bold transition-colors flex justify-between items-center">
+            <button 
+              onClick={() => addActivity("Lista de asistencia exportada a CSV", "doc")}
+              className="w-full text-left px-4 py-3 bg-gray-50 hover:bg-vault-blue hover:text-white rounded-lg font-bold transition-colors flex justify-between items-center"
+            >
               Exportar Lista de Asistencia <Download size={16} />
             </button>
           </div>
