@@ -23,7 +23,7 @@ export interface SchoolConfig {
     badgeText: string;
   };
   integrations: {
-    microsoftEntraTenantId: string;
+    tenantId?: string;
   };
 }
 

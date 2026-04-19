@@ -102,13 +102,6 @@ const Header: React.FC<HeaderProps> = ({ onOpenLogin, onOpenAdmissions, onOpenCa
               <div className={`absolute bottom-0 left-0 w-full h-0.5 ${bgColor} transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300`}></div>
             </a>
           ))}
-          <div className="h-6 w-px bg-gray-200"></div>
-          <button 
-            onClick={onOpenLogin}
-            className={`flex items-center gap-2 ${bgColor} text-white px-5 py-2.5 rounded-sm font-black uppercase text-[10px] tracking-widest hover:shadow-lg hover:opacity-90 transition-all active:scale-95`}
-          >
-            <LogIn size={14} /> Acceso MS-365
-          </button>
         </nav>
 
         {/* Mobile Toggle */}

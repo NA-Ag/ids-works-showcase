@@ -28,10 +28,10 @@ const QuickLinks: React.FC = () => {
         href: "/demos/standard/calendar" // Pointing to new protected page
     },
     { 
-        title: language === 'en' ? 'Intranet Access' : 'Acceso Intranet', 
-        icon: <Lock className="w-8 h-8 text-vault-blue" />,
-        desc: language === 'en' ? 'Unified authentication portals.' : 'Portales de acceso unificado.',
-        href: "/demos/standard/login"
+        title: language === 'en' ? 'Admissions' : 'Admisiones', 
+        icon: <BookOpen className="w-8 h-8 text-vault-blue" />,
+        desc: language === 'en' ? 'Start your journey with us.' : 'Inicie su proceso con nosotros.',
+        href: "/demos/standard/admissions"
     }
   ];
 

@@ -571,7 +571,7 @@ export const getSchoolData = (lang: 'en' | 'es') => {
       certifications: [
         { name: "Programa IB MYP", org: "Bachillerato Internacional", desc: "El marco riguroso para estudiantes de 11 a 16 años." },
         { name: "IGCSE", org: "Cambridge International", desc: "Evaluación reconocida globalmente para educación secundaria." },
-        { name: "Microsoft Expert", org: "Microsoft Education", desc: "Habilidades profesionales en productividad digital y programación." }
+        { name: "Digital Expert", org: "Digital Education", desc: "Habilidades profesionales en productividad digital y programación." }
       ]
     },
     highSchool: isEn ? {
@@ -625,7 +625,7 @@ export const getSchoolData = (lang: 'en' | 'es') => {
       ],
       news: [
         { title: "IB Diploma Excellence", date: "April 2024", category: "Academics", excerpt: "Analyzing the latest results and the pedagogical impact of the IB framework on our High School cohort.", imageUrl: "https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&q=80&w=800" },
-        { title: "Digital Sovereignty 2024", date: "March 2024", category: "Technology", excerpt: "How our partnership with Microsoft is shaping the next decade of educational infrastructure.", imageUrl: "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&q=80&w=800" }
+        { title: "Digital Sovereignty 2024", date: "March 2024", category: "Technology", excerpt: "How our partnership with tech leaders is shaping the next decade of educational infrastructure.", imageUrl: "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&q=80&w=800" }
       ]
     } : {
       magazines: [
