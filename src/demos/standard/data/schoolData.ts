@@ -639,4 +639,3 @@ export const getSchoolData = (lang: 'en' | 'es') => {
     }
   };
 };
-};

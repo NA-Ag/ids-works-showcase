@@ -7,7 +7,6 @@ import QuickLinks from '../components/QuickLinks';
 import NewsEvents from '../components/NewsEvents';
 import VideoSection from '../components/VideoSection';
 import Accreditations from '../components/Accreditations';
-import IDSConnect from '../components/IDSConnect';
 
 const Home: React.FC = () => {
   return (
@@ -17,7 +16,6 @@ const Home: React.FC = () => {
       <AcademicJourney />
       <LifeAtIDS />
       <QuickLinks />
-      <IDSConnect />
       <NewsEvents />
       <Accreditations />
     </>
