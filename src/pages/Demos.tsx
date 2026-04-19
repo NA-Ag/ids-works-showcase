@@ -283,11 +283,12 @@ export const Demos: React.FC = () => {
                 Enfoque en una presentación institucional limpia y directa. Una página de inicio rápida que muestra la información vital de su colegio.
               </p>
               <div className="pt-6 border-t border-gray-100">
-                <Link 
-                  to="/demos/lite" 
+                <Link
+                  to="/demos/lite"
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="w-full bg-white border-2 border-vault-blue text-vault-darkBlue py-4 px-6 rounded-sm font-black text-center flex items-center justify-center gap-2 hover:bg-vault-blue hover:text-white transition-all uppercase tracking-widest"
-                >
-                  Lanzar Demo <ExternalLink size={16} />
+                >                  Lanzar Demo <ExternalLink size={16} />
                 </Link>
               </div>
             </div>
