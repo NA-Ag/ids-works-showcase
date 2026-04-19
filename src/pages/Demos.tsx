@@ -304,6 +304,8 @@ export const Demos: React.FC = () => {
               <div className="pt-6 border-t border-white/10">
                 <Link 
                   to="/demos/standard" 
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="w-full bg-vault-yellow text-vault-darkBlue py-4 px-6 rounded-sm font-black text-center flex items-center justify-center gap-2 hover:bg-white transition-all uppercase tracking-widest shadow-[0_0_20px_rgba(255,215,0,0.2)]"
                 >
                   Lanzar Demo <ExternalLink size={16} />

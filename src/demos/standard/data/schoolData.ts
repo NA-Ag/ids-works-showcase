@@ -94,15 +94,7 @@ const NAV_ITEMS_EN: NavItem[] = [
     ] 
   },
   { label: 'Publications', href: '/demos/standard/publications' },
-  { label: 'Contact', href: '/demos/standard/contact' },
-  { 
-    label: 'Intranet', 
-    href: '/demos/standard/login', 
-    subItems: [
-      {label: 'Student & Staff Portal', href: '/demos/standard/login'},
-      {label: 'Parent Portal', href: '/demos/standard/login'}
-    ] 
-  },
+  { label: 'Contact', href: '/demos/standard/contact' }
 ];
 
 const NAV_ITEMS_ES: NavItem[] = [
@@ -151,15 +143,7 @@ const NAV_ITEMS_ES: NavItem[] = [
     ] 
   },
   { label: 'Publicaciones', href: '/demos/standard/publications' },
-  { label: 'Contacto', href: '/demos/standard/contact' },
-  { 
-    label: 'Intranet', 
-    href: '/demos/standard/login', 
-    subItems: [
-      {label: 'Portal Alumnos y Staff', href: '/demos/standard/login'},
-      {label: 'Portal de Padres', href: '/demos/standard/login'}
-    ] 
-  },
+  { label: 'Contacto', href: '/demos/standard/contact' }
 ];
 
 const RESOURCES_EN = {
