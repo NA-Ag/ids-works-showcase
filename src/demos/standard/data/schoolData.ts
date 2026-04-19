@@ -183,7 +183,7 @@ const RESOURCES_ES = {
     resourcesTitle: "Recursos",
     intranetTitle: "Intranet Escolar",
     newspaperBtn: "Noticias Estudiantiles",
-    resourcesList: ['Biblioteca', 'Nuestro Campus', 'Calendario Escolar', 'Portal de Padres'],
+    resourcesList: ['Biblioteca', 'Nuestro Campus', 'Calendario Escolar'],
     intranetList: ['Padres', 'Staff', 'Estudiantes'],
     learnMore: "Saber más",
     aboutUs: "Quiénes Somos",
@@ -638,4 +638,5 @@ export const getSchoolData = (lang: 'en' | 'es') => {
       ]
     }
   };
+};
 };

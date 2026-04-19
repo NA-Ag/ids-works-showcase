@@ -141,9 +141,6 @@ const Header: React.FC<HeaderProps> = ({ onOpenLogin, onOpenAdmissions, onOpenCa
               </a>
             ))}
           </div>
-          <button className={`w-full flex items-center justify-center gap-3 ${bgColor} text-white py-4 rounded-sm font-black uppercase tracking-widest text-xs`}>
-            <LogIn size={18} /> Acceso Institucional
-          </button>
         </div>
       )}
     </header>
