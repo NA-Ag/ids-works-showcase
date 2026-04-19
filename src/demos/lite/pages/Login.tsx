@@ -18,6 +18,7 @@ const Login: React.FC = () => {
     subtitle: "Usar su cuenta de Colegio IDS",
     next: "Siguiente",
     passwordTitle: "Escribir contraseña",
+    passwordPlaceholder: "Contraseña",
     emailPlaceholder: "someone@colegioids.com",
     signIn: "Iniciar sesión",
     forgot: "¿Olvidó su contraseña?",

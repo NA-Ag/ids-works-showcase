@@ -1,0 +1,16 @@
+{
+  "name": "@ids/database-core",
+  "version": "1.0.0",
+  "main": "index.js",
+  "dependencies": {
+    "better-sqlite3": "^11.2.1",
+    "drizzle-orm": "^0.45.2",
+    "electron": "41.2.1",
+    "vite": "8.0.8"
+  },
+  "devDependencies": {
+    "@types/better-sqlite3": "^7.6.11",
+    "drizzle-kit": "^0.31.10",
+    "typescript": "^5.5.4"
+  }
+}

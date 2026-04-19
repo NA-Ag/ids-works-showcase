@@ -78,6 +78,4 @@ export const PlaceholderDemo: React.FC = () => {
       </div>
     </div>
   );
-};iv>
-  );
 };

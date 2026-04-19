@@ -161,7 +161,7 @@ const LiteHome: React.FC = () => {
     { name: 'Excelencia', desc: 'Buscamos superar nuestros propios límites.', icon: Sparkles, color: 'text-purple-400' }
   ];
 
-  const certifications = [
+  const certifications: { name: string, component?: React.ReactNode, img?: string }[] = [
     { name: 'International Baccalaureate', component: <IBLogo /> },
     { name: 'Cambridge International', component: <CambridgeLogo /> },
     { name: 'CIS Accreditation', component: <CISLogo /> },

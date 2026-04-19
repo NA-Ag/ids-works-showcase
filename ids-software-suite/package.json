@@ -1,0 +1,19 @@
+{
+  "name": "ids-software-suite",
+  "private": true,
+  "workspaces": [
+    "packages/*",
+    "apps/*"
+  ],
+  "scripts": {
+    "install:all": "npm install",
+    "dev": "npm run dev --workspaces --if-present",
+    "build": "npm run build --workspaces --if-present"
+  },
+  "devDependencies": {
+    "drizzle-kit": "^0.31.10"
+  },
+  "overrides": {
+    "esbuild": "^0.25.0"
+  }
+}
