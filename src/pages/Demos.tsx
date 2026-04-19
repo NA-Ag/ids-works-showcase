@@ -18,6 +18,7 @@ import {
   Users
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { MODULES } from '../components/Catalog';
 
 const STATUS_MESSAGES = [
   "> INICIANDO ENTORNO DE PRUEBA...",
