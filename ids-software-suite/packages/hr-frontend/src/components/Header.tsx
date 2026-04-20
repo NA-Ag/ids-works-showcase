@@ -1,5 +1,5 @@
 import React from 'react';
-import { School, ChartPie, Users, FileInvoiceDollar } from 'lucide-react';
+import { School, ChartPie, Users, Receipt } from 'lucide-react';
 import { PayrollPeriod } from '../context/HRContext';
 
 interface HeaderProps {

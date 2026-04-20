@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 import { useHR } from '../context/HRContext';
 import { calcPrePayroll, formatCurrency, getPeriodLabel, isInPeriod } from '../utils/payroll';
-import { Users, FileInvoiceDollar, AlertCircle, TrendingDown, Info } from 'lucide-react';
+import { Users, Receipt, AlertCircle, TrendingDown, Info } from 'lucide-react';
 
 interface MetricCardProps {
   title: string;
