@@ -17,6 +17,7 @@ function AppContent() {
   const isDemo = location.pathname.startsWith('/demos/standard') || 
                  location.pathname.startsWith('/demos/lite') ||
                  location.pathname.startsWith('/demos/admin') ||
+                 location.pathname.startsWith('/demos/pos') ||
                  location.pathname.startsWith('/manual/');
   const isProtectedRoute = location.pathname.endsWith('/login') || location.pathname.endsWith('/dashboard');
 
