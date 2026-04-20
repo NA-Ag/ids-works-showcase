@@ -9,6 +9,8 @@ import { LiteDemo } from './pages/LiteDemo';
 import { BrochureViewer } from './pages/BrochureViewer';
 import { AdminApp } from './demos/admin/App';
 import { DataProvider } from './demos/admin/context/DataContext';
+import { CafeteriaApp } from './demos/cafeteria/App';
+import { POSProvider } from './demos/cafeteria/context/POSContext';
 
 function AppContent() {
   const location = useLocation();
