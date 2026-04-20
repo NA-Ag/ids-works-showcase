@@ -1,6 +1,7 @@
 import React from 'react';
 import { Section } from './Section';
 import { Button } from './Button';
+import { Link } from 'react-router-dom';
 import {
   Users, Calculator, BookOpen, GraduationCap,
   Library, Coffee, UserCircle, AlertTriangle,
