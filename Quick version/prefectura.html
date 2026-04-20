@@ -1,0 +1,457 @@
+```html
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prefectura Escolar - Sistema de Control Disciplinario</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        * { font-family: 'Inter', sans-serif; }
+        .font-mono { font-family: 'JetBrains Mono', monospace; }
+        ::-webkit-scrollbar { width: 5px; }
+        ::-webkit-scrollbar-track { background: #f1f5f9; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        .fade-in { animation: fadeIn 0.2s ease-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+        .btn-action:active { transform: scale(0.98); }
+        
+        @media print {
+            .no-print { display: none !important; }
+            .print-only { display: block !important; }
+            body { background: white; }
+        }
+        .print-only { display: none; }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect, useMemo, useCallback } = React;
+
+        // ============================================================================
+        // DATA LAYER
+        // ============================================================================
+        const STORAGE = {
+            STUDENTS: 'pref_students',
+            RECORDS: 'pref_records'
+        };
+
+        const Storage = {
+            get(key, def = []) { try { const d = localStorage.getItem(key); return d ? JSON.parse(d) : def; } catch { return def; } },
+            set(key, val) { try { localStorage.setItem(key, JSON.stringify(val)); } catch(e) { console.error(e); } }
+        };
+
+        function seedData() {
+            if (!Storage.get(STORAGE.STUDENTS)) {
+                Storage.set(STORAGE.STUDENTS, [
+                    { id: 'ALU001', nombre: 'Sofía Elena Martínez Ruiz', grado: '1° Primaria', grupo: 'A', matricula: '2026001' },
+                    { id: 'ALU002', nombre: 'Diego Alejandro Hernández Vega', grado: '3° Secundaria', grupo: 'B', matricula: '2026002' },
+                    { id: 'ALU003', nombre: 'María Fernanda Torres Luna', grado: '5° Primaria', grupo: 'C', matricula: '2026003' },
+                    { id: 'ALU004', nombre: 'Roberto Javier Díaz Campos', grado: '2° Secundaria', grupo: 'A', matricula: '2026004' },
+                    { id: 'ALU005', nombre: 'Valentina Isabella Cruz Morales', grado: '6° Primaria', grupo: 'A', matricula: '2026005' },
+                ]);
+            }
+            if (!Storage.get(STORAGE.RECORDS)) {
+                const today = new Date();
+                const pastDate = new Date(today);
+                pastDate.setDate(pastDate.getDate() - 2);
+                const yesterday = new Date(today);
+                yesterday.setDate(yesterday.getDate() - 1);
+                
+                Storage.set(STORAGE.RECORDS, [
+                    { id: 'REC001', studentId: 'ALU002', tipo: 'retardo', fecha: pastDate.toISOString(), motivo: 'Llegó 15 minutos después del toque', severidad: 'leve' },
+                    { id: 'REC002', studentId: 'ALU003', tipo: 'uniforme', fecha: yesterday.toISOString(), motivo: 'Sin playera del uniforme oficial', severidad: 'leve' },
+                    { id: 'REC003', studentId: 'ALU004', tipo: 'reporte', fecha: yesterday.toISOString(), motivo: 'Falta de respeto a un compañero durante el recreo', severidad: 'moderado' },
+                    { id: 'REC004', studentId: 'ALU002', tipo: 'reporte', fecha: pastDate.toISOString(), motivo: 'No presentó tarea de matemáticas por tercera vez consecutiva', severidad: 'moderado' },
+                ]);
+            }
+        }
+        seedData();
+
+        // ============================================================================
+        // UTILITIES
+        // ============================================================================
+        const formatTime = (iso) => new Date(iso).toLocaleTimeString('es-MX', { hour: '2-digit', minute: '2-digit' });
+        const formatDate = (iso) => new Date(iso).toLocaleDateString('es-MX', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+        const isToday = (iso) => { const d = new Date(iso); const t = new Date(); return d.toDateString() === t.toDateString(); };
+
+        // ============================================================================
+        // COMPONENTS
+        // ============================================================================
+
+        function StudentSearch({ students, onSelect }) {
+            const [search, setSearch] = useState('');
+            const [focused, setFocused] = useState(false);
+
+            const filtered = useMemo(() => {
+                if (!search.trim()) return [];
+                const term = search.toLowerCase();
+                return students.filter(s => s.nombre.toLowerCase().includes(term) || s.matricula.toLowerCase().includes(term) || `${s.grado} ${s.grupo}`.toLowerCase().includes(term));
+            }, [search, students]);
+
+            return (
+                <div className="relative mb-6">
+                    <div className="relative">
+                        <i className="fas fa-search absolute left-4 top-1/2 transform -translate-y-1/2 text-slate-400 text-lg"></i>
+                        <input 
+                            type="text" 
+                            placeholder="Buscar alumno por nombre o matrícula..." 
+                            className="w-full pl-12 pr-4 py-4 text-lg border-2 border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all bg-white"
+                            value={search}
+                            onChange={e => setSearch(e.target.value)}
+                            onFocus={() => setFocused(true)}
+                            onBlur={() => setTimeout(() => setFocused(false), 200)}
+                            autoFocus
+                        />
+                    </div>
+                    {search && focused && (
+                        <div className="absolute top-full left-0 right-0 bg-white rounded-xl shadow-xl border border-slate-200 mt-2 max-h-64 overflow-y-auto z-20 fade-in">
+                            {filtered.length === 0 ? (
+                                <div className="p-6 text-center text-slate-400"><i className="fas fa-user-slash text-2xl mb-2"></i><p>No se encontraron alumnos</p></div>
+                            ) : (
+                                filtered.map(s => (
+                                    <button key={s.id} onMouseDown={() => onSelect(s)} className="w-full text-left px-4 py-3 hover:bg-blue-50 border-b border-slate-50 last:border-0 flex items-center justify-between transition-colors">
+                                        <div>
+                                            <p className="font-semibold text-slate-800">{s.nombre}</p>
+                                            <p className="text-xs text-slate-500">{s.matricula} • {s.grado} - Grupo {s.grupo}</p>
+                                        </div>
+                                        <i className="fas fa-chevron-right text-slate-300"></i>
+                                    </button>
+                                ))
+                            )}
+                        </div>
+                    )}
+                </div>
+            );
+        }
+
+        function TodayLog({ records, students }) {
+            const todayRecords = useMemo(() => {
+                return records.filter(r => isToday(r.fecha)).sort((a, b) => new Date(b.fecha) - new Date(a.fecha));
+            }, [records]);
+
+            const getStudentName = (id) => students.find(s => s.id === id)?.nombre || 'Desconocido';
+            
+            const tipoColors = {
+                retardo: 'bg-amber-100 text-amber-800 border-amber-200',
+                uniforme: 'bg-purple-100 text-purple-800 border-purple-200',
+                reporte: 'bg-red-100 text-red-800 border-red-200'
+            };
+
+            const tipoLabels = { retardo: 'Retardo', uniforme: 'Falta de Uniforme', reporte: 'Reporte Disciplinario' };
+            const tipoIcons = { retardo: 'fas fa-clock', uniforme: 'fas fa-tshirt', reporte: 'fas fa-file-alt' };
+
+            return (
+                <div className="no-print bg-white rounded-xl border border-slate-200 shadow-sm flex flex-col h-full">
+                    <div className="px-4 py-3 bg-slate-50 border-b border-slate-200 rounded-t-xl flex items-center justify-between">
+                        <h3 className="font-bold text-slate-800 flex items-center"><i className="fas fa-history mr-2 text-slate-400"></i>Historial de Hoy</h3>
+                        <span className="bg-blue-100 text-blue-700 text-xs font-bold px-2 py-1 rounded-full">{todayRecords.length}</span>
+                    </div>
+                    <div className="flex-1 overflow-y-auto p-3 space-y-2">
+                        {todayRecords.length === 0 ? (
+                            <div className="text-center text-slate-400 py-8">
+                                <i className="fas fa-clipboard-check text-3xl mb-2"></i>
+                                <p className="text-sm">Sin registros hoy</p>
+                            </div>
+                        ) : (
+                            todayRecords.map(rec => (
+                                <div key={rec.id} className="bg-slate-50 rounded-lg p-3 border border-slate-100 fade-in">
+                                    <div className="flex items-center justify-between mb-1">
+                                        <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold border ${tipoColors[rec.tipo]}`}>
+                                            <i className={`${tipoIcons[rec.tipo]} mr-1.5`}></i>{tipoLabels[rec.tipo]}
+                                        </span>
+                                        <span className="text-xs font-mono text-slate-500">{formatTime(rec.fecha)}</span>
+                                    </div>
+                                    <p className="font-medium text-sm text-slate-800 truncate">{getStudentName(rec.studentId)}</p>
+                                    {rec.severidad && rec.severidad !== 'leve' && (
+                                        <span className={`inline-block mt-1 text-[10px] font-bold uppercase ${rec.severidad === 'moderado' ? 'text-amber-600' : 'text-red-600'}`}>
+                                            <i className="fas fa-exclamation-circle mr-1"></i>{rec.severidad}
+                                        </span>
+                                    )}
+                                </div>
+                            ))
+                        )}
+                    </div>
+                </div>
+            );
+        }
+
+        function ReportForm({ student, students, records, setRecords, onSave }) {
+            const [form, setForm] = useState({ motivo: '', severidad: 'leve' });
+            const [success, setSuccess] = useState(false);
+
+            const handleSubmit = (e) => {
+                e.preventDefault();
+                if (!form.motivo.trim()) return alert('Escribe el motivo del reporte');
+                
+                const newRecord = {
+                    id: `REC${String(records.length + 1).padStart(3, '0')}`,
+                    studentId: student.id,
+                    tipo: 'reporte',
+                    fecha: new Date().toISOString(),
+                    motivo: form.motivo.trim(),
+                    severidad: form.severidad
+                };
+                setRecords([...records, newRecord]);
+                onSave(newRecord);
+                setSuccess(true);
+                setTimeout(() => onSave(null), 1500);
+            };
+
+            const severidadColors = { leve: 'bg-green-50 border-green-200 text-green-700', moderado: 'bg-amber-50 border-amber-200 text-amber-700', severo: 'bg-red-50 border-red-200 text-red-700' };
+
+            if (success) {
+                return (
+                    <div className="text-center py-12 fade-in">
+                        <div className="w-16 h-16 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-4"><i className="fas fa-check text-emerald-600 text-2xl"></i></div>
+                        <h3 className="text-xl font-bold text-slate-800 mb-2">Reporte Generado</h3>
+                        <p className="text-slate-500">El reporte ha sido guardado exitosamente.</p>
+                    </div>
+                );
+            }
+
+            return (
+                <div className="fade-in">
+                    <form onSubmit={handleSubmit} className="space-y-5">
+                        <div>
+                            <label className="block text-sm font-semibold text-slate-700 mb-1.5">Fecha y Hora</label>
+                            <input type="text" disabled value={new Date().toLocaleString('es-MX')} className="w-full px-3 py-2 bg-slate-100 border border-slate-200 rounded-lg text-slate-500 text-sm" />
+                        </div>
+                        <div>
+                            <label className="block text-sm font-semibold text-slate-700 mb-1.5">Nivel de Severidad</label>
+                            <select className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none bg-white" value={form.severidad} onChange={e => setForm({...form, severidad: e.target.value})}>
+                                <option value="leve">🟢 Leve</option>
+                                <option value="moderado">🟡 Moderado</option>
+                                <option value="severo">🔴 Severo</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label className="block text-sm font-semibold text-slate-700 mb-1.5">Motivo / Descripción de los Hechos</label>
+                            <textarea className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none resize-none" rows="5" placeholder="Describa detalladamente los hechos que motivan el presente reporte disciplinario..." value={form.motivo} onChange={e => setForm({...form, motivo: e.target.value})}></textarea>
+                        </div>
+                        <button type="submit" className="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-semibold shadow-md transition-colors"><i className="fas fa-file-signature mr-2"></i>Generar Reporte</button>
+                    </form>
+                </div>
+            );
+        }
+
+        function PrintableReport({ record, student, onBack }) {
+            const severidadLabels = { leve: 'Leve', moderado: 'Moderado', severo: 'Severo' };
+            
+            return (
+                <div className="print-only bg-white p-8 max-w-3xl mx-auto font-serif">
+                    <div className="text-center border-b-2 border-slate-800 pb-6 mb-8">
+                        <h1 className="text-3xl font-black text-slate-900 tracking-wide">REPORTE DISCIPLINARIO</h1>
+                        <p className="text-slate-600 mt-2">Departamento de Prefectura</p>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-6 mb-8">
+                        <div>
+                            <p className="text-sm text-slate-500 uppercase font-bold">Alumno</p>
+                            <p className="text-lg font-bold text-slate-900">{student.nombre}</p>
+                        </div>
+                        <div>
+                            <p className="text-sm text-slate-500 uppercase font-bold">Grado y Grupo</p>
+                            <p className="text-lg font-bold text-slate-900">{student.grado} - Grupo "{student.grupo}"</p>
+                        </div>
+                        <div>
+                            <p className="text-sm text-slate-500 uppercase font-bold">Matrícula</p>
+                            <p className="font-mono font-bold text-slate-900">{student.matricula}</p>
+                        </div>
+                        <div>
+                            <p className="text-sm text-slate-500 uppercase font-bold">Fecha y Hora</p>
+                            <p className="font-bold text-slate-900">{new Date(record.fecha).toLocaleString('es-MX')}</p>
+                        </div>
+                    </div>
+
+                    <div className="mb-8 p-6 bg-slate-50 border border-slate-200 rounded-lg">
+                        <div className="flex items-center justify-between mb-4">
+                            <p className="text-sm text-slate-500 uppercase font-bold">Severidad</p>
+                            <span className={`px-3 py-1 rounded-full text-xs font-bold uppercase ${record.severidad === 'leve' ? 'bg-green-100 text-green-800' : record.severidad === 'moderado' ? 'bg-amber-100 text-amber-800' : 'bg-red-100 text-red-800'}`}>
+                                {severidadLabels[record.severidad]}
+                            </span>
+                        </div>
+                        <p className="text-sm text-slate-500 uppercase font-bold mb-2">Descripción de los Hechos</p>
+                        <p className="text-base text-slate-900 leading-relaxed">{record.motivo}</p>
+                    </div>
+
+                    <div className="mt-16 grid grid-cols-3 gap-8">
+                        <div className="text-center">
+                            <div className="border-b-2 border-slate-400 mb-2 h-12"></div>
+                            <p className="text-sm font-bold text-slate-700">Firma del Prefecto</p>
+                        </div>
+                        <div className="text-center">
+                            <div className="border-b-2 border-slate-400 mb-2 h-12"></div>
+                            <p className="text-sm font-bold text-slate-700">Firma del Alumno</p>
+                        </div>
+                        <div className="text-center">
+                            <div className="border-b-2 border-slate-400 mb-2 h-12"></div>
+                            <p className="text-sm font-bold text-slate-700">Firma del Padre o Tutor</p>
+                        </div>
+                    </div>
+
+                    <div className="mt-12 pt-6 border-t border-slate-200 text-center">
+                        <p className="text-xs text-slate-400">Documento generado digitalmente por el Sistema de Prefectura Escolar</p>
+                        <p className="text-xs text-slate-400 font-mono mt-1">ID: {record.id} | {new Date().toISOString()}</p>
+                    </div>
+                </div>
+            );
+        }
+
+        function MainDashboard() {
+            const [students, setStudents] = useState(Storage.get(STORAGE.STUDENTS, []));
+            const [records, setRecords] = useState(Storage.get(STORAGE.RECORDS, []));
+            const [selectedStudent, setSelectedStudent] = useState(null);
+            const [showReportForm, setShowReportForm] = useState(false);
+            const [generatedReport, setGeneratedReport] = useState(null);
+
+            useEffect(() => { Storage.set(STORAGE.STUDENTS, students); }, [students]);
+            useEffect(() => { Storage.set(STORAGE.RECORDS, records); }, [records]);
+
+            const studentStats = useMemo(() => {
+                if (!selectedStudent) return null;
+                const studentRecords = records.filter(r => r.studentId === selectedStudent.id);
+                const retardos = studentRecords.filter(r => r.tipo === 'retardo').length;
+                const reportes = studentRecords.filter(r => r.tipo === 'reporte').length;
+                const uniformes = studentRecords.filter(r => r.tipo === 'uniforme').length;
+                return { retardos, reportes, uniformes, total: studentRecords.length };
+            }, [selectedStudent, records]);
+
+            const quickLog = (tipo) => {
+                if (!selectedStudent) return;
+                const newRecord = {
+                    id: `REC${String(records.length + 1).padStart(3, '0')}`,
+                    studentId: selectedStudent.id,
+                    tipo: tipo,
+                    fecha: new Date().toISOString(),
+                    motivo: tipo === 'retardo' ? 'Retardo registrado' : 'Falta al reglamento de uniforme',
+                    severidad: 'leve'
+                };
+                setRecords([...records, newRecord]);
+            };
+
+            const handleReportSave = (record) => {
+                if (record) setGeneratedReport(record);
+                else { setShowReportForm(false); setGeneratedReport(null); }
+            };
+
+            return (
+                <div className="min-h-screen bg-slate-50 flex no-print">
+                    <main className="flex-1 p-6 md:p-8">
+                        <div className="max-w-3xl mx-auto">
+                            <div className="flex items-center justify-between mb-6">
+                                <div className="flex items-center space-x-4">
+                                    <div className="w-12 h-12 bg-blue-600 rounded-xl flex items-center justify-center"><i className="fas fa-shield-alt text-white text-xl"></i></div>
+                                    <div>
+                                        <h1 className="text-2xl font-bold text-slate-800">Prefectura Escolar</h1>
+                                        <p className="text-sm text-slate-500">Sistema de Control Disciplinario</p>
+                                    </div>
+                                </div>
+                                {selectedStudent && <button onClick={() => { setSelectedStudent(null); setShowReportForm(false); setGeneratedReport(null); }} className="text-slate-400 hover:text-slate-600 transition-colors"><i className="fas fa-times text-xl"></i></button>}
+                            </div>
+
+                            {!selectedStudent ? (
+                                <StudentSearch students={students} onSelect={setSelectedStudent} />
+                            ) : showReportForm ? (
+                                <div className="bg-white rounded-xl border border-slate-200 p-6 shadow-sm">
+                                    <div className="mb-6 pb-4 border-b border-slate-100">
+                                        <h2 className="text-xl font-bold text-slate-800 mb-1">Generar Reporte Disciplinario</h2>
+                                        <p className="text-sm text-slate-500">Alumno: <span className="font-semibold text-slate-800">{selectedStudent.nombre}</span></p>
+                                    </div>
+                                    <ReportForm student={selectedStudent} students={students} records={records} setRecords={setRecords} onSave={handleReportSave} />
+                                </div>
+                            ) : generatedReport ? (
+                                <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+                                    <div className="p-6 bg-slate-50 border-b border-slate-200 flex items-center justify-between">
+                                        <h2 className="text-xl font-bold text-slate-800"><i className="fas fa-file-alt mr-2 text-blue-600"></i>Reporte Generado</h2>
+                                        <div className="flex items-center space-x-3">
+                                            <button onClick={() => setGeneratedReport(null)} className="px-4 py-2 bg-slate-200 hover:bg-slate-300 text-slate-700 rounded-lg font-medium text-sm transition-colors">
+                                                <i className="fas fa-arrow-left mr-1"></i> Volver
+                                            </button>
+                                            <button onClick={() => window.print()} className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium text-sm transition-colors shadow-sm">
+                                                <i className="fas fa-print mr-1"></i> Imprimir Documento
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div className="p-8">
+                                        <PrintableReport record={generatedReport} student={selectedStudent} onBack={() => setGeneratedReport(null)} />
+                                    </div>
+                                </div>
+                            ) : (
+                                <div className="fade-in">
+                                    {/* Student Info */}
+                                    <div className="bg-white rounded-xl border border-slate-200 p-6 shadow-sm mb-6">
+                                        <div className="flex items-center justify-between mb-4">
+                                            <div className="flex items-center space-x-4">
+                                                <div className="w-16 h-16 bg-blue-100 rounded-xl flex items-center justify-center text-blue-600 font-bold text-xl">{selectedStudent.nombre.split(' ').map(n => n[0]).slice(0, 2).join('')}</div>
+                                                <div>
+                                                    <h2 className="text-xl font-bold text-slate-800">{selectedStudent.nombre}</h2>
+                                                    <p className="text-slate-500">{selectedStudent.grado} - Grupo "{selectedStudent.grupo}"</p>
+                                                    <p className="text-xs text-slate-400 font-mono mt-1">Matrícula: {selectedStudent.matricula}</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div className="grid grid-cols-3 gap-3 mt-4">
+                                            <div className="bg-amber-50 rounded-lg p-3 text-center border border-amber-100">
+                                                <p className="text-2xl font-bold text-amber-600">{studentStats.retardos}</p>
+                                                <p className="text-xs text-amber-700 font-medium">Retardos</p>
+                                            </div>
+                                            <div className="bg-purple-50 rounded-lg p-3 text-center border border-purple-100">
+                                                <p className="text-2xl font-bold text-purple-600">{studentStats.uniformes}</p>
+                                                <p className="text-xs text-purple-700 font-medium">Faltas Uniforme</p>
+                                            </div>
+                                            <div className="bg-red-50 rounded-lg p-3 text-center border border-red-100">
+                                                <p className="text-2xl font-bold text-red-600">{studentStats.reportes}</p>
+                                                <p className="text-xs text-red-700 font-medium">Reportes</p>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    {/* Quick Actions */}
+                                    <div className="grid grid-cols-3 gap-4 mb-6">
+                                        <button onClick={() => quickLog('retardo')} className="btn-action bg-amber-500 hover:bg-amber-600 text-white p-6 rounded-xl shadow-md transition-all flex flex-col items-center space-y-2 border-b-4 border-amber-700">
+                                            <i className="fas fa-clock text-3xl"></i>
+                                            <span className="font-bold text-sm">Registrar Retardo</span>
+                                        </button>
+                                        <button onClick={() => quickLog('uniforme')} className="btn-action bg-purple-500 hover:bg-purple-600 text-white p-6 rounded-xl shadow-md transition-all flex flex-col items-center space-y-2 border-b-4 border-purple-700">
+                                            <i className="fas fa-tshirt text-3xl"></i>
+                                            <span className="font-bold text-sm">Falta al Uniforme</span>
+                                        </button>
+                                        <button onClick={() => setShowReportForm(true)} className="btn-action bg-red-500 hover:bg-red-600 text-white p-6 rounded-xl shadow-md transition-all flex flex-col items-center space-y-2 border-b-4 border-red-700">
+                                            <i className="fas fa-file-alt text-3xl"></i>
+                                            <span className="font-bold text-sm">Generar Reporte</span>
+                                        </button>
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+                    </main>
+
+                    {/* Sidebar */}
+                    <aside className="hidden xl:block w-80 bg-slate-50 border-l border-slate-200 p-4">
+                        <TodayLog records={records} students={students} />
+                    </aside>
+                </div>
+            );
+        }
+
+        // ============================================================================
+        // APP
+        // ============================================================================
+        function App() {
+            return <MainDashboard />;
+        }
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>
+```

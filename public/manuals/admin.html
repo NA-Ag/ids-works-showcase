@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manual Técnico - Suite de Administración Escolar</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Archivo:wght@400;600;800&family=JetBrains+Mono:wght@400;700&display=swap');
+        body {
+            font-family: 'Archivo', sans-serif;
+            background-color: #FDFBF7;
+            color: #36454F;
+        }
+        h1, h2, h3, h4, h5, h6 {
+            color: #003366;
+            font-weight: 800;
+        }
+        .prose h2 {
+            font-size: 1.5rem;
+            margin-top: 2rem;
+            margin-bottom: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            border-bottom: 2px solid #FFD700;
+            padding-bottom: 0.5rem;
+        }
+        .prose ul {
+            list-style-type: disc;
+            padding-left: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        .prose li {
+            margin-bottom: 0.5rem;
+        }
+        .prose strong {
+            color: #005C97;
+        }
+        .print-break {
+            page-break-before: always;
+        }
+        @media print {
+            body {
+                background-color: white;
+            }
+            .no-print {
+                display: none;
+            }
+            .page-container {
+                box-shadow: none;
+                padding: 0;
+                margin: 0;
+            }
+        }
+    </style>
+</head>
+<body class="p-4 md:p-8">
+    <main class="page-container max-w-4xl mx-auto bg-white p-8 md:p-12 shadow-xl border-t-8 border-[#FFD700]">
+        
+        <header class="mb-10 text-center border-b pb-8 border-gray-100">
+            <h4 class="text-xs font-mono font-bold text-[#005C97] tracking-[0.3em] uppercase mb-2">I.D.S Works</h4>
+            <h1 class="text-4xl font-black uppercase tracking-tighter mb-4">Manual Técnico</h1>
+            <h2 class="text-2xl font-bold text-gray-500 italic">Suite de Administración Escolar</h2>
+        </header>
+
+        <div class="prose max-w-none text-gray-700 leading-relaxed">
+            
+            <h2>Objetivo Principal</h2>
+            <p>
+                Construir un Sistema de Administración Escolar (SIS/ERP) robusto, con funcionamiento primordial fuera de línea (offline-first), centrado en el registro de alumnos, seguimiento de inscripciones, directorios de padres y generación de documentos internos.
+            </p>
+
+            <h2>Justificación de Inversión y Valor ($15,000 MXN)</h2>
+            <p>
+                El costo de $15,000 MXN por una licencia perpetua para 20 equipos es altamente competitivo frente a los cargos recurrentes de plataformas SaaS.
+            </p>
+            <ul>
+                <li>Los sistemas tradicionales de gestión escolar en la nube cobran tarifas mensuales por alumno o usuario, lo que rápidamente puede superar los $50,000+ MXN anuales para una escuela mediana.</li>
+                <li>Este módulo elimina completamente los costos recurrentes. Funciona en la red local (LAN) existente de la escuela sin requerir acceso a internet.</li>
+                <li>Provee <strong>soberanía y privacidad absoluta de datos</strong>, una preocupación creciente en las instituciones educativas de México.</li>
+                <li>Genera instantáneamente los documentos internos oficiales requeridos (ej. formatos de cumplimiento SEP, constancias de inscripción) sin depender de una conexión a internet inestable.</li>
+            </ul>
+
+            <h2>Arquitectura Técnica</h2>
+            <ul>
+                <li><strong>Framework:</strong> Electron.js</li>
+                <li><strong>Frontend:</strong> React 19, TypeScript, Tailwind CSS, Lucide React.</li>
+                <li><strong>Servidor Local / Backend:</strong> Node.js (Express) ejecutándose en la máquina designada como "Host" para servir la API a las demás computadoras en la red LAN.</li>
+                <li><strong>Base de Datos:</strong> SQLite (base de datos local basada en un archivo; no requiere instalación ni mantenimiento por parte del personal de TI de la escuela).</li>
+                <li><strong>Plataformas Objetivo:</strong> Windows y Linux ÚNICAMENTE.
+                    <br/><em class="text-sm text-gray-500">Nota: macOS se excluye explícitamente para evitar las restricciones de certificación de Apple y costos recurrentes de licencias. Las administraciones escolares utilizan predominantemente Windows.</em>
+                </li>
+            </ul>
+
+            <h2>Investigación de Código Abierto y Alternativas</h2>
+            <p>Antes de la construcción, analizamos soluciones de código abierto existentes para comprender la paridad de funciones y las estructuras de datos:</p>
+            <ol class="list-decimal pl-6 mb-6 space-y-2">
+                <li><strong>Frappe Education (ERPNext):</strong> Basado en Python. Extremadamente completo pero muy pesado, requiere una configuración de servidor compleja (MariaDB, Redis). Demasiado complicado para una experiencia simple "instalar y usar" sin conexión.</li>
+                <li><strong>RosarioSIS:</strong> PHP/PostgreSQL. Ligero y popular para educación K-12, pero requiere instalar una pila de servidor web (LAMP/LEMP). Excelente referencia para esquema de datos (demografía, asistencia, calificaciones).</li>
+                <li><strong>Gibbon:</strong> PHP/MySQL. Altamente flexible con plugins, pero nuevamente depende de servidores web o acceso a internet.</li>
+            </ol>
+            <p class="bg-blue-50 p-4 rounded-md border-l-4 border-[#005C97]">
+                <strong>Conclusión:</strong> Las herramientas de código abierto requieren conocimientos técnicos de TI para configurar servidores y bases de datos. Nuestro enfoque (Electron + SQLite + Node.js en LAN) ofrece el poder de una aplicación web con la instalación de cero configuración de un <code>.exe</code> de escritorio, brindándonos una ventaja competitiva masiva en facilidad de uso.
+            </p>
+
+            <div class="print-break"></div>
+
+            <h2>Características Clave (Ventaja Competitiva para México)</h2>
+            <p>Para superar completamente a las alternativas SaaS de paga y de código abierto en el mercado mexicano, el software resuelve problemas burocráticos específicos y dolorosos que el software genérico ignora. Estas funciones hacen que el pago único sea una inversión evidente:</p>
+            
+            <ul>
+                <li><strong>Validación Automática de CURP y RFC:</strong> Las herramientas genéricas permiten errores de dedo. Nuestro software incluye un algoritmo fuera de línea para validar instantáneamente si un CURP o RFC (de un tutor) es estructuralmente correcto antes de poder guardarse, previniendo rechazos posteriores de la SEP.</li>
+                <li><strong>Descarga Administrativa (Exportación SEP):</strong> Actualmente las escuelas sufren la "doble captura" (escribir calificaciones en su sistema y luego otra vez en portales como SICEP o AEFCM). Mapeamos nuestra base de datos para generar exactamente los archivos <code>.csv</code> o <code>.xml</code> requeridos para carga masiva gubernamental.</li>
+                <li><strong>Constancias con Código QR Local:</strong> La SEP tarda meses en emitir certificados oficiales. La Admin Suite genera "Constancias de Estudios" hermosas y listas para imprimir, que incluyen un código QR generado localmente que enlaza a un ID de validación, dando legitimidad institucional inmediata ante los padres.</li>
+                <li><strong>Protección Contra Caídas de la SEP:</strong> Durante el fin de curso, los portales gubernamentales colapsan. Al ser 100% offline, el personal puede continuar trabajando, capturando calificaciones e imprimiendo boletas internas sin interrupción.</li>
+            </ul>
+
+            <h2>Características Esenciales (Módulos Base)</h2>
+            <ol class="list-decimal pl-6 mb-6 space-y-2">
+                <li><strong>Gestión de Alumnos:</strong> Agregar, editar y buscar perfiles de alumnos (demografía, alertas médicas, grupos asignados).</li>
+                <li><strong>Directorio de Padres/Tutores:</strong> Enlazar alumnos con perfiles de padres con información de contacto.</li>
+                <li><strong>Inscripciones / Grupos:</strong> Asignar alumnos a ciclos escolares, grados y grupos específicos (ej. "1A", "3B").</li>
+                <li><strong>Generación de Documentos:</strong> Crear constancias en PDF, listas de asistencia y cartas administrativas básicas.</li>
+                <li><strong>Host de Red Local:</strong> Un panel de configuración para iniciar el servidor local, habilitar la encriptación E2EE (AES-GCM) y mostrar la dirección IP local para que otros clientes puedan conectarse de forma segura.</li>
+            </ol>
+            
+        </div>
+        
+        <footer class="mt-12 pt-6 border-t border-gray-200 text-center text-xs text-gray-400 font-mono">
+            <p>Documento Confidencial - I.D.S Works</p>
+            <p>Generado automáticamente a través de idsworks.com.mx</p>
+        </footer>
+    </main>
+</body>
+</html>

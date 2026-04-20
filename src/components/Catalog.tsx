@@ -157,6 +157,16 @@ export const Catalog: React.FC = () => {
             >
               Comprar Módulo
             </Button>
+            <div className="mt-3 text-center">
+              <Link 
+                to={`/manual/${mod.id}`} 
+                target="_blank" 
+                rel="noopener noreferrer" 
+                className="text-[10px] font-bold text-vault-blue hover:text-vault-darkBlue uppercase tracking-widest underline transition-colors"
+              >
+                Ver Manual Técnico
+              </Link>
+            </div>
           </div>
         ))}
       </div>

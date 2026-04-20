@@ -1,0 +1,1071 @@
+```html
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ColegiosPay - Control Financiero Escolar</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- React & ReactDOM -->
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+    
+    <!-- Babel for JSX -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    
+    <style>
+        * { font-family: 'Inter', sans-serif; }
+        .font-mono { font-family: 'JetBrains Mono', monospace; }
+        body { background: #f1f5f9; }
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: #e2e8f0; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb { background: #94a3b8; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #64748b; }
+        
+        .fade-in { animation: fadeIn 0.25s ease-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+        
+        .modal-backdrop { background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(4px); }
+        
+        .status-pagado { background: #dcfce7; color: #166534; border: 1px solid #bbf7d0; }
+        .status-pendiente { background: #fef3c7; color: #92400e; border: 1px solid #fde68a; }
+        .status-vencido { background: #fee2e2; color: #991b1b; border: 1px solid #fecaca; }
+        
+        .metric-card { background: linear-gradient(145deg, #ffffff, #f8fafc); }
+    </style>
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        finance: {
+                            50: '#f0fdf4',
+                            100: '#dcfce7',
+                            200: '#bbf7d0',
+                            300: '#86efac',
+                            400: '#4ade80',
+                            500: '#22c55e',
+                            600: '#16a34a',
+                            700: '#15803d',
+                            800: '#166534',
+                            900: '#14532d',
+                        },
+                        slate: {
+                            50: '#f8fafc',
+                            100: '#f1f5f9',
+                            200: '#e2e8f0',
+                            300: '#cbd5e1',
+                            400: '#94a3b8',
+                            500: '#64748b',
+                            600: '#475569',
+                            700: '#334155',
+                            800: '#1e293b',
+                            900: '#0f172a',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        // ============================================================================
+        // DATA LAYER - localStorage wrapper
+        // NOTA: Esta capa está separada para facilitar la migración futura a 
+        // Electron/Node.js con filesystem o base de datos (SQLite, PostgreSQL).
+        // Solo necesita reemplazar las funciones `get` y `set` por llamadas a tu backend.
+        // ============================================================================
+        
+        const STORAGE_KEYS = {
+            STUDENTS: 'colegiospay_students',
+            PAYMENTS: 'colegiospay_payments',
+            CONFIG: 'colegiospay_config'
+        };
+
+        // Helper functions for localStorage operations
+        const Storage = {
+            get(key, defaultValue = null) {
+                try {
+                    const raw = localStorage.getItem(key);
+                    return raw ? JSON.parse(raw) : defaultValue;
+                } catch (e) {
+                    console.error(`[Storage] Error reading ${key}:`, e);
+                    return defaultValue;
+                }
+            },
+            set(key, value) {
+                try {
+                    localStorage.setItem(key, JSON.stringify(value));
+                    return true;
+                } catch (e) {
+                    console.error(`[Storage] Error writing ${key}:`, e);
+                    return false;
+                }
+            }
+        };
+
+        // ============================================================================
+        // MOCK DATA GENERATOR
+        // ============================================================================
+        
+        function generateMockData() {
+            if (Storage.get(STORAGE_KEYS.STUDENTS)) return;
+
+            // School year months (Mexican private school calendar: Sept-Jun)
+            const schoolMonths = [
+                'Septiembre', 'Octubre', 'Noviembre', 'Diciembre',
+                'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio'
+            ];
+            const currentYear = new Date().getFullYear();
+
+            const mockStudents = [
+                {
+                    id: 'EST001',
+                    nombre: 'Sofía Elena Martínez Ruiz',
+                    grado: '3° Primaria',
+                    mensualidad: 4500,
+                    inscripcion: 8000,
+                    rfc: 'MARS120315HDFRNP09',
+                    razonSocial: 'Carlos Martínez López',
+                    usoCFDI: 'D10',
+                    curp: 'MARS120315MDFRPN09'
+                },
+                {
+                    id: 'EST002',
+                    nombre: 'Diego Alejandro Hernández Vega',
+                    grado: '5° Primaria',
+                    mensualidad: 5200,
+                    inscripcion: 9500,
+                    rfc: 'HEVD100822HDFRGA02',
+                    razonSocial: 'Patricia Vega Sánchez',
+                    usoCFDI: 'D10',
+                    curp: 'HEVD100822HDFRGA02'
+                },
+                {
+                    id: 'EST003',
+                    nombre: 'María Fernanda Torres Castillo',
+                    grado: '1° Secundaria',
+                    mensualidad: 6100,
+                    inscripcion: 12000,
+                    rfc: 'TOCF110405MDFRRL08',
+                    razonSocial: 'Roberto Torres Aguilar',
+                    usoCFDI: 'D10',
+                    curp: 'TOCF110405MDFRRL08'
+                },
+                {
+                    id: 'EST004',
+                    nombre: 'Mateo Sebastián Cruz Flores',
+                    grado: '6° Primaria',
+                    mensualidad: 5800,
+                    inscripcion: 10000,
+                    rfc: 'CRFM090718HDFRRT04',
+                    razonSocial: 'Ana María Flores García',
+                    usoCFDI: 'D10',
+                    curp: 'CRFM090718HDFRRT04'
+                },
+                {
+                    id: 'EST005',
+                    nombre: 'Valentina Isabella López Morales',
+                    grado: '2° Primaria',
+                    mensualidad: 4200,
+                    inscripcion: 7500,
+                    rfc: 'LOMV130930MDFRRL11',
+                    razonSocial: 'Jorge López Ramírez',
+                    usoCFDI: 'D10',
+                    curp: 'LOMV130930MDFRRL11'
+                }
+            ];
+
+            // Generate mock payments (some paid, some pending)
+            const mockPayments = [];
+            let paymentId = 1;
+
+            const formasPago = ['Efectivo', 'Transferencia (SPEI)', 'Tarjeta de Débito', 'Tarjeta de Crédito', 'Cheque'];
+
+            mockStudents.forEach(student => {
+                // Inscription - always paid in August/September
+                mockPayments.push({
+                    id: `PAY${String(paymentId++).padStart(4, '0')}`,
+                    studentId: student.id,
+                    concepto: 'Inscripción',
+                    mes: null,
+                    monto: student.inscripcion,
+                    fecha: `${currentYear}-08-15T10:30:00`,
+                    formaPago: 'Transferencia (SPEI)',
+                    estado: 'Pagado',
+                    folio: `REC-${currentYear}-${String(paymentId).padStart(4, '0')}`
+                });
+
+                // Monthly payments - first 3-4 months paid, rest pending
+                const paidMonths = Math.floor(Math.random() * 3) + 2; // 2-4 months paid
+                
+                schoolMonths.forEach((mes, index) => {
+                    const isPaid = index < paidMonths;
+                    const paymentDate = isPaid ? 
+                        `${currentYear}-${String(index + 9 > 12 ? index - 3 : index + 9).padStart(2, '0')}-${String(Math.floor(Math.random() * 15) + 1).padStart(2, '0')}T${String(Math.floor(Math.random() * 8) + 9).padStart(2, '0')}:${String(Math.floor(Math.random() * 60)).padStart(2, '0')}:00` : null;
+
+                    mockPayments.push({
+                        id: `PAY${String(paymentId++).padStart(4, '0')}`,
+                        studentId: student.id,
+                        concepto: 'Colegiatura',
+                        mes: mes,
+                        monto: student.mensualidad,
+                        fecha: paymentDate,
+                        formaPago: isPaid ? formasPago[Math.floor(Math.random() * formasPago.length)] : null,
+                        estado: isPaid ? 'Pagado' : 'Pendiente',
+                        folio: isPaid ? `REC-${currentYear}-${String(paymentId).padStart(4, '0')}` : null
+                    });
+                });
+            });
+
+            Storage.set(STORAGE_KEYS.STUDENTS, mockStudents);
+            Storage.set(STORAGE_KEYS.PAYMENTS, mockPayments);
+        }
+
+        // Initialize mock data on first load
+        generateMockData();
+
+        // ============================================================================
+        // UTILITY FUNCTIONS
+        // ============================================================================
+        
+        const formatCurrency = (amount) => {
+            return new Intl.NumberFormat('es-MX', { 
+                style: 'currency', 
+                currency: 'MXN',
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            }).format(amount);
+        };
+
+        const formatDate = (isoString) => {
+            if (!isoString) return '-';
+            const date = new Date(isoString);
+            return date.toLocaleDateString('es-MX', { 
+                day: '2-digit', 
+                month: 'short', 
+                year: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+        };
+
+        const getStatusBadge = (status) => {
+            const classes = status === 'Pagado' ? 'status-pagado' : 
+                           status === 'Vencido' ? 'status-vencido' : 'status-pendiente';
+            const label = status === 'Pagado' ? 'Pagado' : 
+                         status === 'Vencido' ? 'Vencido' : 'Pendiente';
+            return (
+                <span className={`inline-flex items-center px-2.5 py-1 rounded-md text-xs font-semibold ${classes}`}>
+                    <i className={`fas fa-circle text-[8px] mr-1.5 ${status === 'Pagado' ? 'text-green-600' : status === 'Vencido' ? 'text-red-600' : 'text-yellow-600'}`}></i>
+                    {label}
+                </span>
+            );
+        };
+
+        // School months configuration
+        const SCHOOL_MONTHS = [
+            'Septiembre', 'Octubre', 'Noviembre', 'Diciembre',
+            'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio'
+        ];
+
+        const FORMAS_PAGO = [
+            'Efectivo',
+            'Transferencia (SPEI)',
+            'Tarjeta de Crédito',
+            'Tarjeta de Débito',
+            'Cheque'
+        ];
+
+        const USOS_CFDI = [
+            { value: 'D10', label: 'D10 - Pagos por servicios educativos' },
+            { value: 'G01', label: 'G01 - Adquisición de mercancías' },
+            { value: 'G03', label: 'G03 - Gastos en general' },
+            { value: 'S01', label: 'S01 - Sin efectos fiscales' },
+            { value: 'P01', label: 'P01 - Por definir' }
+        ];
+
+        // ============================================================================
+        // REACT COMPONENTS
+        // ============================================================================
+
+        const { useState, useEffect, useMemo, useCallback } = React;
+
+        // --- Sidebar Navigation ---
+        function Sidebar({ currentView, setView, students }) {
+            const navItems = [
+                { id: 'dashboard', icon: 'fas fa-chart-line', label: 'Panel de Control' },
+                { id: 'students', icon: 'fas fa-user-graduate', label: 'Alumnos' },
+                { id: 'payments', icon: 'fas fa-money-bill-wave', label: 'Pagos' }
+            ];
+
+            return (
+                <aside className="w-64 bg-slate-800 text-white min-h-screen flex flex-col shadow-xl">
+                    {/* Logo */}
+                    <div className="p-6 border-b border-slate-700">
+                        <div className="flex items-center space-x-3">
+                            <div className="w-10 h-10 bg-emerald-500 rounded-lg flex items-center justify-center">
+                                <i className="fas fa-school text-white text-xl"></i>
+                            </div>
+                            <div>
+                                <h1 className="text-lg font-bold text-white">ColegiosPay</h1>
+                                <p className="text-xs text-slate-400">Control Financiero</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Navigation */}
+                    <nav className="flex-1 py-4">
+                        {navItems.map(item => (
+                            <button
+                                key={item.id}
+                                onClick={() => setView(item.id)}
+                                className={`w-full flex items-center px-6 py-3 text-sm transition-all ${
+                                    currentView === item.id 
+                                        ? 'bg-slate-700 text-emerald-400 border-r-4 border-emerald-400' 
+                                        : 'text-slate-300 hover:bg-slate-700 hover:text-white'
+                                }`}
+                            >
+                                <i className={`${item.icon} w-6 text-center mr-3`}></i>
+                                <span className="font-medium">{item.label}</span>
+                            </button>
+                        ))}
+                    </nav>
+
+                    {/* Footer */}
+                    <div className="p-4 border-t border-slate-700">
+                        <div className="flex items-center space-x-3">
+                            <div className="w-8 h-8 bg-slate-600 rounded-full flex items-center justify-center text-xs font-bold">
+                                ADM
+                            </div>
+                            <div>
+                                <p className="text-sm font-medium text-white">Administración</p>
+                                <p className="text-xs text-slate-400">v1.0.0</p>
+                            </div>
+                        </div>
+                    </div>
+                </aside>
+            );
+        }
+
+        // --- Metric Card ---
+        function MetricCard({ title, value, subtitle, icon, color }) {
+            const colorClasses = {
+                green: 'bg-emerald-100 text-emerald-600',
+                red: 'bg-red-100 text-red-600',
+                blue: 'bg-blue-100 text-blue-600',
+                yellow: 'bg-yellow-100 text-yellow-600'
+            };
+
+            return (
+                <div className="metric-card rounded-xl p-5 border border-slate-200 shadow-sm">
+                    <div className="flex items-start justify-between">
+                        <div>
+                            <p className="text-sm font-medium text-slate-500">{title}</p>
+                            <p className="text-2xl font-bold text-slate-800 mt-2 font-mono">{value}</p>
+                            <p className="text-xs text-slate-400 mt-1">{subtitle}</p>
+                        </div>
+                        <div className={`w-12 h-12 rounded-lg flex items-center justify-center ${colorClasses[color]}`}>
+                            <i className={`${icon} text-xl`}></i>
+                        </div>
+                    </div>
+                </div>
+            );
+        }
+
+        // --- Dashboard View ---
+        function DashboardView({ students, payments, setView, setSelectedStudent }) {
+            const currentMonth = SCHOOL_MONTHS[new Date().getMonth() - 8] || 'Septiembre'; // Approximate
+            const currentYear = new Date().getFullYear();
+
+            // Calculate metrics
+            const monthlyIncome = useMemo(() => {
+                return payments
+                    .filter(p => p.estado === 'Pagado' && p.fecha && p.fecha.startsWith(currentYear))
+                    .reduce((sum, p) => sum + p.monto, 0);
+            }, [payments, currentYear]);
+
+            const pastDue = useMemo(() => {
+                return payments
+                    .filter(p => p.estado === 'Pendiente')
+                    .reduce((sum, p) => sum + p.monto, 0);
+            }, [payments]);
+
+            const collectionRate = useMemo(() => {
+                const total = payments.reduce((sum, p) => sum + p.monto, 0);
+                return total > 0 ? Math.round((monthlyIncome / total) * 100) : 0;
+            }, [monthlyIncome, payments]);
+
+            const recentPayments = useMemo(() => {
+                return payments
+                    .filter(p => p.estado === 'Pagado')
+                    .sort((a, b) => new Date(b.fecha) - new Date(a.fecha))
+                    .slice(0, 8);
+            }, [payments]);
+
+            const getStudentName = (id) => {
+                const s = students.find(st => st.id === id);
+                return s ? s.nombre : 'Desconocido';
+            };
+
+            return (
+                <div className="space-y-6 fade-in">
+                    {/* Header */}
+                    <div className="flex items-center justify-between">
+                        <div>
+                            <h2 className="text-2xl font-bold text-slate-800">Panel de Control</h2>
+                            <p className="text-slate-500 mt-1">Resumen financiero del ciclo escolar {currentYear}-{currentYear + 1}</p>
+                        </div>
+                        <div className="flex items-center space-x-2 bg-emerald-50 text-emerald-700 px-4 py-2 rounded-lg border border-emerald-200">
+                            <i className="fas fa-calendar-day"></i>
+                            <span className="text-sm font-medium">{new Date().toLocaleDateString('es-MX', { day: 'numeric', month: 'long', year: 'numeric' })}</span>
+                        </div>
+                    </div>
+
+                    {/* Metrics Grid */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
+                        <MetricCard 
+                            title="Ingresos del Mes" 
+                            value={formatCurrency(monthlyIncome)}
+                            subtitle="Cobros registrados"
+                            icon="fas fa-arrow-trend-up"
+                            color="green"
+                        />
+                        <MetricCard 
+                            title="Cartera Vencida Total" 
+                            value={formatCurrency(pastDue)}
+                            subtitle="Pagos pendientes de cobro"
+                            icon="fas fa-exclamation-triangle"
+                            color="red"
+                        />
+                        <MetricCard 
+                            title="Tasa de Cobranza" 
+                            value={`${collectionRate}%`}
+                            subtitle="Eficiencia de cobro"
+                            icon="fas fa-chart-pie"
+                            color="blue"
+                        />
+                        <MetricCard 
+                            title="Alumnos Activos" 
+                            value={students.length.toString()}
+                            subtitle="Padrón de estudiantes"
+                            icon="fas fa-user-graduate"
+                            color="yellow"
+                        />
+                    </div>
+
+                    {/* Recent Payments */}
+                    <div className="bg-white rounded-xl border border-slate-200 shadow-sm">
+                        <div className="px-6 py-4 border-b border-slate-200 flex items-center justify-between">
+                            <h3 className="text-lg font-semibold text-slate-800">
+                                <i className="fas fa-receipt mr-2 text-emerald-600"></i>
+                                Últimos Pagos Registrados
+                            </h3>
+                            <button className="text-sm text-emerald-600 hover:text-emerald-700 font-medium">
+                                Ver todos <i className="fas fa-arrow-right ml-1"></i>
+                            </button>
+                        </div>
+                        <div className="overflow-x-auto">
+                            <table className="w-full">
+                                <thead className="bg-slate-50">
+                                    <tr>
+                                        <th className="text-left py-3 px-6 text-xs font-semibold text-slate-500 uppercase tracking-wider">Folio</th>
+                                        <th className="text-left py-3 px-6 text-xs font-semibold text-slate-500 uppercase tracking-wider">Alumno</th>
+                                        <th className="text-left py-3 px-6 text-xs font-semibold text-slate-500 uppercase tracking-wider">Concepto</th>
+                                        <th className="text-left py-3 px-6 text-xs font-semibold text-slate-500 uppercase tracking-wider">Forma de Pago</th>
+                                        <th className="text-right py-3 px-6 text-xs font-semibold text-slate-500 uppercase tracking-wider">Monto</th>
+                                        <th className="text-left py-3 px-6 text-xs font-semibold text-slate-500 uppercase tracking-wider">Fecha</th>
+                                    </tr>
+                                </thead>
+                                <tbody className="divide-y divide-slate-100">
+                                    {recentPayments.map(payment => (
+                                        <tr key={payment.id} className="hover:bg-slate-50 transition-colors">
+                                            <td className="py-3 px-6">
+                                                <span className="font-mono text-sm font-medium text-slate-600">{payment.folio}</span>
+                                            </td>
+                                            <td className="py-3 px-6">
+                                                <div className="flex items-center space-x-3">
+                                                    <div className="w-8 h-8 bg-slate-200 rounded-full flex items-center justify-center text-slate-600 font-semibold text-xs">
+                                                        {getStudentName(payment.studentId).split(' ').map(n => n[0]).slice(0, 2).join('')}
+                                                    </div>
+                                                    <span className="text-sm font-medium text-slate-800">{getStudentName(payment.studentId)}</span>
+                                                </div>
+                                            </td>
+                                            <td className="py-3 px-6 text-sm text-slate-600">
+                                                {payment.concepto} {payment.mes ? `• ${payment.mes}` : ''}
+                                            </td>
+                                            <td className="py-3 px-6">
+                                                <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-slate-100 text-slate-700">
+                                                    <i className={`fas ${
+                                                        payment.formaPago === 'Efectivo' ? 'fa-money-bill-wave text-emerald-500' :
+                                                        payment.formaPago === 'Transferencia (SPEI)' ? 'fa-building-columns text-blue-500' :
+                                                        payment.formaPago?.includes('Tarjeta') ? 'fa-credit-card text-purple-500' :
+                                                        'fa-money-check text-amber-500'
+                                                    } mr-1.5`}></i>
+                                                    {payment.formaPago}
+                                                </span>
+                                            </td>
+                                            <td className="py-3 px-6 text-right font-mono text-sm font-semibold text-slate-800">
+                                                {formatCurrency(payment.monto)}
+                                            </td>
+                                            <td className="py-3 px-6 text-sm text-slate-500">
+                                                {formatDate(payment.fecha)}
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            );
+        }
+
+        // --- Student Ledger View ---
+        function StudentLedgerView({ student, payments, onBack, onLogPayment }) {
+            const studentPayments = payments.filter(p => p.studentId === student.id);
+            
+            // Calculate totals
+            const totalPaid = studentPayments.filter(p => p.estado === 'Pagado').reduce((sum, p) => sum + p.monto, 0);
+            const totalPending = studentPayments.filter(p => p.estado === 'Pendiente').reduce((sum, p) => sum + p.monto, 0);
+            
+            // Get payment status for a specific concept/month
+            const getPaymentStatus = (concepto, mes = null) => {
+                return studentPayments.find(p => p.concepto === concepto && p.mes === mes);
+            };
+
+            return (
+                <div className="fade-in space-y-6">
+                    {/* Back Button & Header */}
+                    <div className="flex items-center justify-between">
+                        <button onClick={onBack} className="flex items-center text-slate-500 hover:text-slate-700 transition-colors">
+                            <i className="fas fa-arrow-left mr-2"></i>
+                            <span className="text-sm font-medium">Regresar</span>
+                        </button>
+                        <button 
+                            onClick={onLogPayment}
+                            className="bg-emerald-600 hover:bg-emerald-700 text-white px-5 py-2.5 rounded-lg font-medium shadow-sm transition-colors flex items-center space-x-2"
+                        >
+                            <i className="fas fa-plus"></i>
+                            <span>Registrar Pago</span>
+                        </button>
+                    </div>
+
+                    {/* Student Header */}
+                    <div className="bg-white rounded-xl border border-slate-200 p-6 shadow-sm">
+                        <div className="flex items-start justify-between">
+                            <div className="flex items-center space-x-4">
+                                <div className="w-16 h-16 bg-slate-200 rounded-xl flex items-center justify-center text-slate-600 font-bold text-2xl">
+                                    {student.nombre.split(' ').map(n => n[0]).slice(0, 2).join('')}
+                                </div>
+                                <div>
+                                    <h3 className="text-xl font-bold text-slate-800">{student.nombre}</h3>
+                                    <p className="text-slate-500 mt-1">{student.grado} • Matrícula: <span className="font-mono font-medium">{student.id}</span></p>
+                                    <p className="text-sm text-slate-400 mt-0.5">CURP: <span className="font-mono">{student.curp}</span></p>
+                                </div>
+                            </div>
+                            <div className="text-right">
+                                <p className="text-sm text-slate-500">Mensualidad</p>
+                                <p className="text-2xl font-bold text-slate-800 font-mono">{formatCurrency(student.mensualidad)}</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Financial Summary */}
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div className="bg-white rounded-lg p-4 border border-slate-200">
+                            <p className="text-sm text-slate-500">Total Pagado</p>
+                            <p className="text-xl font-bold text-emerald-600 font-mono mt-1">{formatCurrency(totalPaid)}</p>
+                        </div>
+                        <div className="bg-white rounded-lg p-4 border border-slate-200">
+                            <p className="text-sm text-slate-500">Pendiente de Pago</p>
+                            <p className="text-xl font-bold text-red-600 font-mono mt-1">{formatCurrency(totalPending)}</p>
+                        </div>
+                        <div className="bg-white rounded-lg p-4 border border-slate-200">
+                            <p className="text-sm text-slate-500">Total Ciclos</p>
+                            <p className="text-xl font-bold text-slate-800 font-mono mt-1">{formatCurrency(totalPaid + totalPending)}</p>
+                        </div>
+                    </div>
+
+                    {/* Expected Payments Table */}
+                    <div className="bg-white rounded-xl border border-slate-200 shadow-sm">
+                        <div className="px-6 py-4 border-b border-slate-200">
+                            <h3 className="text-lg font-semibold text-slate-800">Estado de Cuenta</h3>
+                        </div>
+                        <div className="overflow-x-auto">
+                            <table className="w-full">
+                                <thead className="bg-slate-50">
+                                    <tr>
+                                        <th className="text-left py-3 px-6 text-xs font-semibold text-slate-500 uppercase tracking-wider">Concepto</th>
+                                        <th className="text-left py-3 px-6 text-xs font-semibold text-slate-500 uppercase tracking-wider">Periodo</th>
+                                        <th className="text-right py-3 px-6 text-xs font-semibold text-slate-500 uppercase tracking-wider">Monto</th>
+                                        <th className="text-center py-3 px-6 text-xs font-semibold text-slate-500 uppercase tracking-wider">Estado</th>
+                                        <th className="text-left py-3 px-6 text-xs font-semibold text-slate-500 uppercase tracking-wider">Fecha Pago</th>
+                                    </tr>
+                                </thead>
+                                <tbody className="divide-y divide-slate-100">
+                                    {/* Inscripción */}
+                                    {(() => {
+                                        const insc = getPaymentStatus('Inscripción');
+                                        return (
+                                            <tr className="hover:bg-slate-50 transition-colors">
+                                                <td className="py-3 px-6 font-medium text-slate-800">Inscripción</td>
+                                                <td className="py-3 px-6 text-sm text-slate-600">Agosto {new Date().getFullYear()}</td>
+                                                <td className="py-3 px-6 text-right font-mono text-sm">{formatCurrency(student.inscripcion)}</td>
+                                                <td className="py-3 px-6 text-center">{getStatusBadge(insc?.estado || 'Pendiente')}</td>
+                                                <td className="py-3 px-6 text-sm text-slate-500">{insc ? formatDate(insc.fecha) : '-'}</td>
+                                            </tr>
+                                        );
+                                    })()}
+                                    
+                                    {/* Monthly Colegiaturas */}
+                                    {SCHOOL_MONTHS.map(mes => {
+                                        const pago = getPaymentStatus('Colegiatura', mes);
+                                        return (
+                                            <tr key={mes} className="hover:bg-slate-50 transition-colors">
+                                                <td className="py-3 px-6 font-medium text-slate-800">Colegiatura</td>
+                                                <td className="py-3 px-6 text-sm text-slate-600">{mes}</td>
+                                                <td className="py-3 px-6 text-right font-mono text-sm">{formatCurrency(student.mensualidad)}</td>
+                                                <td className="py-3 px-6 text-center">{getStatusBadge(pago?.estado || 'Pendiente')}</td>
+                                                <td className="py-3 px-6 text-sm text-slate-500">{pago ? formatDate(pago.fecha) : '-'}</td>
+                                            </tr>
+                                        );
+                                    })}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    {/* Billing Data */}
+                    <div className="bg-white rounded-xl border border-slate-200 shadow-sm">
+                        <div className="px-6 py-4 border-b border-slate-200 flex items-center justify-between">
+                            <h3 className="text-lg font-semibold text-slate-800">
+                                <i className="fas fa-file-invoice mr-2 text-slate-400"></i>
+                                Datos de Facturación
+                            </h3>
+                            <span className="text-xs text-slate-400 bg-slate-100 px-2 py-1 rounded">CFDI 4.0</span>
+                        </div>
+                        <div className="p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wide mb-1">RFC del Receptor</label>
+                                <p className="font-mono text-lg text-slate-800">{student.rfc}</p>
+                            </div>
+                            <div>
+                                <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wide mb-1">Razón Social</label>
+                                <p className="text-lg text-slate-800">{student.razonSocial}</p>
+                            </div>
+                            <div>
+                                <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wide mb-1">Uso de CFDI</label>
+                                <p className="text-lg text-slate-800">
+                                    <span className="inline-flex items-center px-2 py-1 bg-blue-50 text-blue-700 rounded text-sm font-medium border border-blue-200">
+                                        {student.usoCFDI} - {USOS_CFDI.find(u => u.value === student.usoCFDI)?.label.split(' - ')[1]}
+                                    </span>
+                                </p>
+                            </div>
+                            <div>
+                                <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wide mb-1">Régimen Fiscal</label>
+                                <p className="text-lg text-slate-800">616 - Sin obligaciones fiscales</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            );
+        }
+
+        // --- Students List View ---
+        function StudentsView({ students, onSelectStudent, payments }) {
+            const [searchTerm, setSearchTerm] = useState('');
+            
+            const filteredStudents = useMemo(() => {
+                if (!searchTerm) return students;
+                const term = searchTerm.toLowerCase();
+                return students.filter(s => 
+                    s.nombre.toLowerCase().includes(term) || 
+                    s.grado.toLowerCase().includes(term) ||
+                    s.id.toLowerCase().includes(term)
+                );
+            }, [students, searchTerm]);
+
+            const getPaymentSummary = (studentId) => {
+                const studentPayments = payments.filter(p => p.studentId === studentId);
+                const paid = studentPayments.filter(p => p.estado === 'Pagado').length;
+                const total = studentPayments.length;
+                return { paid, total, pending: total - paid };
+            };
+
+            return (
+                <div className="space-y-6 fade-in">
+                    <div className="flex items-center justify-between">
+                        <div>
+                            <h2 className="text-2xl font-bold text-slate-800">Alumnos</h2>
+                            <p className="text-slate-500 mt-1">Gestión de estados de cuenta</p>
+                        </div>
+                    </div>
+
+                    {/* Search */}
+                    <div className="bg-white rounded-xl border border-slate-200 p-4 shadow-sm">
+                        <div className="relative">
+                            <i className="fas fa-search absolute left-4 top-1/2 transform -translate-y-1/2 text-slate-400"></i>
+                            <input 
+                                type="text"
+                                placeholder="Buscar por nombre, grado o matrícula..."
+                                className="w-full pl-12 pr-4 py-3 border border-slate-200 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition-all"
+                                value={searchTerm}
+                                onChange={(e) => setSearchTerm(e.target.value)}
+                            />
+                        </div>
+                    </div>
+
+                    {/* Students Table */}
+                    <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+                        <table className="w-full">
+                            <thead className="bg-slate-50">
+                                <tr>
+                                    <th className="text-left py-3 px-6 text-xs font-semibold text-slate-500 uppercase tracking-wider">Matrícula</th>
+                                    <th className="text-left py-3 px-6 text-xs font-semibold text-slate-500 uppercase tracking-wider">Alumno</th>
+                                    <th className="text-left py-3 px-6 text-xs font-semibold text-slate-500 uppercase tracking-wider">Grado</th>
+                                    <th className="text-left py-3 px-6 text-xs font-semibold text-slate-500 uppercase tracking-wider">Pagos</th>
+                                    <th className="text-right py-3 px-6 text-xs font-semibold text-slate-500 uppercase tracking-wider">Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody className="divide-y divide-slate-100">
+                                {filteredStudents.map(student => {
+                                    const summary = getPaymentSummary(student.id);
+                                    return (
+                                        <tr key={student.id} className="hover:bg-slate-50 transition-colors">
+                                            <td className="py-4 px-6 font-mono text-sm text-slate-600">{student.id}</td>
+                                            <td className="py-4 px-6">
+                                                <div className="flex items-center space-x-3">
+                                                    <div className="w-10 h-10 bg-slate-200 rounded-full flex items-center justify-center text-slate-600 font-bold">
+                                                        {student.nombre.split(' ').map(n => n[0]).slice(0, 2).join('')}
+                                                    </div>
+                                                    <span className="text-sm font-medium text-slate-800">{student.nombre}</span>
+                                                </div>
+                                            </td>
+                                            <td className="py-4 px-6 text-sm text-slate-600">{student.grado}</td>
+                                            <td className="py-4 px-6">
+                                                <div className="flex items-center space-x-2">
+                                                    <span className="text-xs font-medium text-emerald-600">{summary.paid} pagados</span>
+                                                    <span className="text-slate-300">•</span>
+                                                    <span className="text-xs font-medium text-red-600">{summary.pending} pendientes</span>
+                                                </div>
+                                            </td>
+                                            <td className="py-4 px-6 text-right">
+                                                <button 
+                                                    onClick={() => onSelectStudent(student)}
+                                                    className="text-emerald-600 hover:text-emerald-700 font-medium text-sm transition-colors"
+                                                >
+                                                    Ver Estado de Cuenta <i className="fas fa-arrow-right ml-1"></i>
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    );
+                                })}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            );
+        }
+
+        // --- Payment Modal ---
+        function PaymentModal({ student, payments, onClose, onSave }) {
+            const [form, setForm] = useState({
+                concepto: 'Colegiatura',
+                mes: SCHOOL_MONTHS[new Date().getMonth() - 8] || 'Septiembre',
+                monto: student.mensualidad,
+                formaPago: 'Transferencia (SPEI)',
+                notas: ''
+            });
+            const [showSuccess, setShowSuccess] = useState(false);
+
+            // Check if selected payment is already paid
+            const existingPayment = payments.find(
+                p => p.studentId === student.id && p.concepto === form.concepto && p.mes === form.mes && p.estado === 'Pagado'
+            );
+
+            const handleSubmit = (e) => {
+                e.preventDefault();
+                if (existingPayment) {
+                    alert('Este concepto ya se encuentra pagado.');
+                    return;
+                }
+                
+                onSave({
+                    ...form,
+                    studentId: student.id,
+                    fecha: new Date().toISOString(),
+                    estado: 'Pagado',
+                    folio: `REC-${new Date().getFullYear()}-${String(payments.length + 1).padStart(4, '0')}`
+                });
+                
+                setShowSuccess(true);
+                setTimeout(() => {
+                    setShowSuccess(false);
+                    onClose();
+                }, 2000);
+            };
+
+            if (showSuccess) {
+                return (
+                    <div className="modal-backdrop fixed inset-0 z-50 flex items-center justify-center p-4">
+                        <div className="bg-white rounded-2xl p-8 max-w-md w-full text-center fade-in shadow-2xl">
+                            <div className="w-20 h-20 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                                <i className="fas fa-check text-emerald-600 text-3xl"></i>
+                            </div>
+                            <h3 className="text-xl font-bold text-slate-800 mb-2">¡Pago Registrado!</h3>
+                            <p className="text-slate-500 mb-4">Se ha generado el recibo interno exitosamente.</p>
+                            <div className="bg-slate-50 rounded-lg p-4 border border-slate-200 mb-4">
+                                <p className="text-sm text-slate-500">Folio generado</p>
+                                <p className="font-mono text-lg font-bold text-slate-800">REC-{new Date().getFullYear()}-{String(payments.length + 1).padStart(4, '0')}</p>
+                            </div>
+                            <p className="text-xs text-slate-400">Redirigiendo...</p>
+                        </div>
+                    </div>
+                );
+            }
+
+            return (
+                <div className="modal-backdrop fixed inset-0 z-50 flex items-center justify-center p-4">
+                    <div className="bg-white rounded-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto shadow-2xl fade-in" onClick={e => e.stopPropagation()}>
+                        {/* Modal Header */}
+                        <div className="px-6 py-4 border-b border-slate-200 flex items-center justify-between bg-slate-50 rounded-t-2xl">
+                            <h3 className="text-lg font-bold text-slate-800">Registrar Nuevo Pago</h3>
+                            <button onClick={onClose} className="text-slate-400 hover:text-slate-600 transition-colors">
+                                <i className="fas fa-times text-xl"></i>
+                            </button>
+                        </div>
+
+                        {/* Form */}
+                        <form onSubmit={handleSubmit} className="p-6 space-y-5">
+                            {/* Student Info */}
+                            <div className="bg-slate-50 rounded-lg p-4 border border-slate-200">
+                                <p className="text-sm text-slate-500">Alumno</p>
+                                <p className="font-semibold text-slate-800">{student.nombre}</p>
+                                <p className="text-sm text-slate-500 mt-1">{student.grado} • Matrícula: {student.id}</p>
+                            </div>
+
+                            {/* Concepto */}
+                            <div>
+                                <label className="block text-sm font-medium text-slate-700 mb-1.5">Concepto de Pago</label>
+                                <select 
+                                    className="w-full px-4 py-2.5 border border-slate-200 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none bg-white"
+                                    value={form.concepto}
+                                    onChange={(e) => {
+                                        const value = e.target.value;
+                                        setForm({
+                                            ...form,
+                                            concepto: value,
+                                            monto: value === 'Inscripción' ? student.inscripcion : student.mensualidad
+                                        });
+                                    }}
+                                >
+                                    <option value="Colegiatura">Colegiatura</option>
+                                    <option value="Inscripción">Inscripción</option>
+                                    <option value="Actividades Extra">Actividades Extraescolares</option>
+                                    <option value="Comedor">Comedor</option>
+                                </select>
+                            </div>
+
+                            {/* Month (only for Colegiatura) */}
+                            {form.concepto === 'Colegiatura' && (
+                                <div>
+                                    <label className="block text-sm font-medium text-slate-700 mb-1.5">Mes Correspondiente</label>
+                                    <select 
+                                        className="w-full px-4 py-2.5 border border-slate-200 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none bg-white"
+                                        value={form.mes}
+                                        onChange={(e) => setForm({...form, mes: e.target.value})}
+                                    >
+                                        {SCHOOL_MONTHS.map(mes => (
+                                            <option key={mes} value={mes}>{mes}</option>
+                                        ))}
+                                    </select>
+                                </div>
+                            )}
+
+                            {/* Amount */}
+                            <div>
+                                <label className="block text-sm font-medium text-slate-700 mb-1.5">Monto a Pagar (MXN)</label>
+                                <div className="relative">
+                                    <span className="absolute left-4 top-1/2 transform -translate-y-1/2 text-slate-400 font-medium">$</span>
+                                    <input 
+                                        type="number"
+                                        step="0.01"
+                                        className="w-full pl-8 pr-4 py-2.5 border border-slate-200 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none font-mono text-lg"
+                                        value={form.monto}
+                                        onChange={(e) => setForm({...form, monto: parseFloat(e.target.value) || 0})}
+                                        required
+                                    />
+                                </div>
+                            </div>
+
+                            {/* Payment Method - Mexican Context */}
+                            <div>
+                                <label className="block text-sm font-medium text-slate-700 mb-1.5">
+                                    <i className="fas fa-money-check mr-1 text-slate-400"></i>
+                                    Forma de Pago
+                                </label>
+                                <select 
+                                    className="w-full px-4 py-2.5 border border-slate-200 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none bg-white"
+                                    value={form.formaPago}
+                                    onChange={(e) => setForm({...form, formaPago: e.target.value})}
+                                >
+                                    {FORMAS_PAGO.map(fp => (
+                                        <option key={fp} value={fp}>{fp}</option>
+                                    ))}
+                                </select>
+                                <p className="text-xs text-slate-400 mt-1.5">
+                                    <i className="fas fa-info-circle mr-1"></i>
+                                    Seleccione la forma de pago según catálogo del SAT
+                                </p>
+                            </div>
+
+                            {/* Notes */}
+                            <div>
+                                <label className="block text-sm font-medium text-slate-700 mb-1.5">Notas (Opcional)</label>
+                                <textarea 
+                                    className="w-full px-4 py-2.5 border border-slate-200 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none resize-none"
+                                    rows="2"
+                                    placeholder="Referencia bancaria, observaciones..."
+                                    value={form.notas}
+                                    onChange={(e) => setForm({...form, notas: e.target.value})}
+                                ></textarea>
+                            </div>
+
+                            {/* Warning if already paid */}
+                            {existingPayment && (
+                                <div className="bg-red-50 border border-red-200 rounded-lg p-3 flex items-start">
+                                    <i className="fas fa-exclamation-circle text-red-500 mt-1 mr-2"></i>
+                                    <p className="text-sm text-red-700">Este concepto ya se encuentra registrado como pagado.</p>
+                                </div>
+                            )}
+
+                            {/* Actions */}
+                            <div className="flex items-center justify-end space-x-3 pt-4 border-t border-slate-100">
+                                <button 
+                                    type="button"
+                                    onClick={onClose}
+                                    className="px-6 py-2.5 border border-slate-200 text-slate-600 rounded-lg hover:bg-slate-50 transition-colors font-medium"
+                                >
+                                    Cancelar
+                                </button>
+                                <button 
+                                    type="submit"
+                                    className="px-6 py-2.5 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition-colors font-medium shadow-sm"
+                                >
+                                    <i className="fas fa-check mr-2"></i>Guardar Pago
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            );
+        }
+
+        // ============================================================================
+        // MAIN APP COMPONENT
+        // ============================================================================
+
+        function App() {
+            const [currentView, setView] = useState('dashboard');
+            const [selectedStudent, setSelectedStudent] = useState(null);
+            const [students, setStudents] = useState([]);
+            const [payments, setPayments] = useState([]);
+            const [showPaymentModal, setShowPaymentModal] = useState(false);
+
+            // Load data from localStorage
+            useEffect(() => {
+                setStudents(Storage.get(STORAGE_KEYS.STUDENTS, []));
+                setPayments(Storage.get(STORAGE_KEYS.PAYMENTS, []));
+            }, []);
+
+            // Save new payment
+            const handleSavePayment = (paymentData) => {
+                const newPayments = [...payments, { ...paymentData, id: `PAY${String(payments.length + 1).padStart(4, '0')}` }];
+                Storage.set(STORAGE_KEYS.PAYMENTS, newPayments);
+                setPayments(newPayments);
+            };
+
+            // Handle student selection
+            const handleSelectStudent = (student) => {
+                setSelectedStudent(student);
+                setView('student-ledger');
+            };
+
+            // Handle back button
+            const handleBack = () => {
+                setSelectedStudent(null);
+                setView('students');
+            };
+
+            return (
+                <div className="min-h-screen bg-slate-100 flex">
+                    {/* Sidebar */}
+                    <Sidebar currentView={currentView} setView={(view) => {
+                        setView(view);
+                        setSelectedStudent(null);
+                        setShowPaymentModal(false);
+                    }} students={students} />
+
+                    {/* Main Content */}
+                    <main className="flex-1 p-8 overflow-y-auto">
+                        <div className="max-w-7xl mx-auto">
+                            {currentView === 'dashboard' && (
+                                <DashboardView 
+                                    students={students} 
+                                    payments={payments} 
+                                    setView={setView}
+                                    setSelectedStudent={handleSelectStudent}
+                                />
+                            )}
+                            {currentView === 'students' && (
+                                <StudentsView 
+                                    students={students} 
+                                    payments={payments}
+                                    onSelectStudent={handleSelectStudent}
+                                />
+                            )}
+                            {currentView === 'student-ledger' && selectedStudent && (
+                                <StudentLedgerView 
+                                    student={selectedStudent}
+                                    payments={payments}
+                                    onBack={handleBack}
+                                    onLogPayment={() => setShowPaymentModal(true)}
+                                />
+                            )}
+                        </div>
+                    </main>
+
+                    {/* Payment Modal */}
+                    {showPaymentModal && selectedStudent && (
+                        <PaymentModal 
+                            student={selectedStudent}
+                            payments={payments}
+                            onClose={() => setShowPaymentModal(false)}
+                            onSave={handleSavePayment}
+                        />
+                    )}
+                </div>
+            );
+        }
+
+        // Render the App
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>
+```

@@ -1,0 +1,624 @@
+```html
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RH Escolar - Sistema de Pre-nómina</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        * { font-family: 'Inter', sans-serif; }
+        body { background: #f1f5f9; }
+        .font-mono { font-family: 'JetBrains Mono', monospace; }
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: #e2e8f0; border-radius: 3px; }
+        ::-webkit-scrollbar-thumb { background: #94a3b8; border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: #64748b; }
+        .fade-in { animation: fadeIn 0.25s ease-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+        .modal-backdrop { background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(4px); }
+    </style>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        slate: { 850: '#1a2436' }
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect, useMemo, useCallback } = React;
+
+        // ============================================================================
+        // DATA LAYER
+        // ============================================================================
+        const STORAGE_KEYS = {
+            EMPLOYEES: 'rh_empleados',
+            INCIDENCES: 'rh_incidencias',
+            PERIOD: 'rh_periodo'
+        };
+
+        const Storage = {
+            get(key, def = null) {
+                try { const d = localStorage.getItem(key); return d ? JSON.parse(d) : def; } catch { return def; }
+            },
+            set(key, val) {
+                try { localStorage.setItem(key, JSON.stringify(val)); } catch(e) { console.error(e); }
+            }
+        };
+
+        function seedData() {
+            if (!Storage.get(STORAGE_KEYS.EMPLOYEES)) {
+                Storage.set(STORAGE_KEYS.EMPLOYEES, [
+                    { id: 'EMP001', nombre: 'María Elena Ríos Gutiérrez', puesto: 'Coordinador Académico', tipoPago: 'fijo', salarioBase: 28500, rfc: 'RIGM850615XX0', nss: '12345678901' },
+                    { id: 'EMP002', nombre: 'Carlos Alberto Mendoza Silva', puesto: 'Maestro de Matemáticas', tipoPago: 'hora', salarioBase: 195, rfc: 'MESC900210YY1', nss: '09876543210' },
+                    { id: 'EMP003', nombre: 'Sofía Valentina Torres Luna', puesto: 'Maestra de Ciencias', puestoCorto: 'Maestra', tipoPago: 'hora', salarioBase: 185, rfc: 'TOLS950422ZZ2', nss: '11223344556' },
+                    { id: 'EMP004', nombre: 'Roberto Alejandro Díaz Campos', puesto: 'Director General', tipoPago: 'fijo', salarioBase: 52000, rfc: 'DICR780830AA3', nss: '66554433221' },
+                ]);
+            }
+            if (!Storage.get(STORAGE_KEYS.INCIDENCES)) {
+                const today = new Date();
+                const year = today.getFullYear();
+                const month = today.getMonth() + 1;
+                Storage.set(STORAGE_KEYS.INCIDENCES, [
+                    { id: 'INC001', empleadoId: 'EMP002', fecha: `${year}-${String(month).padStart(2,'0')}-03`, tipo: 'retardo', notas: 'Llegó 15 minutos tarde' },
+                    { id: 'INC002', empleadoId: 'EMP002', fecha: `${year}-${String(month).padStart(2,'0')}-05`, tipo: 'retardo', notas: 'Llegó 20 minutos tarde' },
+                    { id: 'INC003', empleadoId: 'EMP001', fecha: `${year}-${String(month).padStart(2,'0')}-08`, tipo: 'permiso', notas: 'Asesoría externa' },
+                    { id: 'INC004', empleadoId: 'EMP003', fecha: `${year}-${String(month).padStart(2,'0')}-10`, tipo: 'falta_injustificada', notas: 'Sin justificación previa' },
+                ]);
+            }
+            if (!Storage.get(STORAGE_KEYS.PERIOD)) {
+                const now = new Date();
+                const isSecondHalf = now.getDate() >= 16;
+                Storage.set(STORAGE_KEYS.PERIOD, {
+                    year: now.getFullYear(),
+                    month: now.getMonth(),
+                    quincena: isSecondHalf ? 2 : 1
+                });
+            }
+        }
+        seedData();
+
+        // ============================================================================
+        // UTILITY FUNCTIONS
+        // ============================================================================
+        const formatCurrency = (amount) => new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN', minimumFractionDigits: 2 }).format(amount);
+        
+        const getPeriodDates = (period) => {
+            const start = new Date(period.year, period.month, period.quincena === 1 ? 1 : 16);
+            const end = new Date(period.year, period.month, period.quincena === 1 ? 15 : new Date(period.year, period.month + 1, 0).getDate());
+            return { start, end };
+        };
+
+        const getPeriodLabel = (period) => {
+            const months = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+            const { start, end } = getPeriodDates(period);
+            return `${start.getDate()} al ${end.getDate()} de ${months[period.month]} ${period.year}`;
+        };
+
+        const isInPeriod = (dateStr, period) => {
+            if (!dateStr) return false;
+            const { start, end } = getPeriodDates(period);
+            const d = new Date(dateStr + 'T00:00:00');
+            start.setHours(0,0,0,0);
+            end.setHours(23,59,59,999);
+            return d >= start && d <= end;
+        };
+
+        const calcPrePayroll = (employee, incidences, period) => {
+            const empIncidences = incidences.filter(i => i.empleadoId === employee.id && isInPeriod(i.fecha, period));
+            const retardos = empIncidences.filter(i => i.tipo === 'retardo').length;
+            const faltas = empIncidences.filter(i => i.tipo === 'falta_injustificada').length;
+            const incapacidades = empIncidences.filter(i => i.tipo === 'incapacidad_imss').length;
+            const permisos = empIncidences.filter(i => i.tipo === 'permiso').length;
+
+            let deduccion = 0;
+            let faltasEquivalentes = 0;
+
+            if (employee.tipoPago === 'fijo') {
+                const diario = employee.salarioBase / 30;
+                const faltasPorRetardos = Math.floor(retardos / 3);
+                faltasEquivalentes = faltas + faltasPorRetardos;
+                deduccion = (faltasEquivalentes + incapacidades) * diario;
+            } else {
+                // Por hora: assume 40 hrs/week = ~80 hrs/quincena
+                // Deduction per absence: 8 hours (1 day) * hourly rate
+                const faltasPorRetardos = Math.floor(retardos / 3);
+                faltasEquivalentes = faltas + faltasPorRetardos;
+                const horasPerdidas = (faltasEquivalentes + incapacidades) * 8;
+                deduccion = horasPerdidas * employee.salarioBase;
+            }
+
+            return {
+                empleado: employee,
+                retardos,
+                faltas,
+                faltasEquivalentes,
+                incapacidades,
+                permisos,
+                base: employee.tipoPago === 'fijo' ? employee.salarioBase : employee.salarioBase * 80,
+                deduccion,
+                neto: (employee.tipoPago === 'fijo' ? employee.salarioBase : employee.salarioBase * 80) - deduccion,
+                incidencias: empIncidences
+            };
+        };
+
+        // ============================================================================
+        // COMPONENTS
+        // ============================================================================
+
+        function Header({ currentView, setView, period, setPeriod }) {
+            const months = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+            const navItems = [
+                { id: 'dashboard', icon: 'fas fa-chart-pie', label: 'Panel Principal' },
+                { id: 'directorio', icon: 'fas fa-users', label: 'Directorio' },
+                { id: 'prenomina', icon: 'fas fa-file-invoice-dollar', label: 'Pre-nómina' }
+            ];
+
+            return (
+                <aside className="w-64 bg-slate-850 text-white min-h-screen flex flex-col shadow-2xl border-r border-slate-700">
+                    <div className="p-6 border-b border-slate-700">
+                        <div className="flex items-center space-x-3">
+                            <div className="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center">
+                                <i className="fas fa-school text-white text-lg"></i>
+                            </div>
+                            <div>
+                                <h1 className="text-lg font-bold">RH Escolar</h1>
+                                <p className="text-xs text-slate-400">Gestión de Nómina</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <nav className="flex-1 py-4">
+                        {navItems.map(item => (
+                            <button key={item.id} onClick={() => setView(item.id)} className={`w-full flex items-center px-6 py-3 text-sm transition-all ${currentView === item.id ? 'bg-slate-700 text-blue-400 border-r-4 border-blue-400' : 'text-slate-300 hover:bg-slate-700 hover:text-white'}`}>
+                                <i className={`${item.icon} w-6 text-center mr-3`}></i>
+                                <span className="font-medium">{item.label}</span>
+                            </button>
+                        ))}
+                    </nav>
+
+                    <div className="p-4 border-t border-slate-700">
+                        <p className="text-xs text-slate-400 mb-2 font-semibold uppercase tracking-wider">Periodo Activo</p>
+                        <select value={`${period.year}-${period.month}-${period.quincena}`} onChange={(e) => { const [y, m, q] = e.target.value.split('-').map(Number); setPeriod({ year: y, month: m, quincena: q }); }} className="w-full bg-slate-800 border border-slate-600 rounded px-2 py-1 text-xs text-white">
+                            {months.map((mes, idx) => (
+                                <optgroup key={idx} label={`${mes} ${period.year}`}>
+                                    <option value={`${period.year}-${idx}-1`}>1ra Quincena</option>
+                                    <option value={`${period.year}-${idx}-2`}>2da Quincena</option>
+                                </optgroup>
+                            ))}
+                        </select>
+                        <p className="text-xs text-blue-300 mt-2 font-medium">{getPeriodLabel(period)}</p>
+                    </div>
+                </aside>
+            );
+        }
+
+        function Dashboard({ employees, incidences, period }) {
+            const metrics = useMemo(() => {
+                const preCalculations = employees.map(emp => calcPrePayroll(emp, incidences, period));
+                const totalDeductions = preCalculations.reduce((sum, c) => sum + c.deduccion, 0);
+                const totalNeto = preCalculations.reduce((sum, c) => sum + c.neto, 0);
+                const incidenciasPeriod = incidences.filter(i => isInPeriod(i.fecha, period));
+                const retardos = incidenciasPeriod.filter(i => i.tipo === 'retardo').length;
+                const faltas = incidenciasPeriod.filter(i => i.tipo === 'falta_injustificada').length;
+                return { totalDeductions, totalNeto, retardos, faltas, empleados: employees.length };
+            }, [employees, incidences, period]);
+
+            return (
+                <div className="space-y-6 fade-in">
+                    <div className="flex items-center justify-between">
+                        <div>
+                            <h2 className="text-2xl font-bold text-slate-800">Panel Principal</h2>
+                            <p className="text-slate-500 mt-1">Resumen de nómina • {getPeriodLabel(period)}</p>
+                        </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
+                        {[
+                            { title: 'Empleados Activos', value: metrics.empleados, icon: 'fas fa-users', color: 'blue' },
+                            { title: 'Total Pre-nómina', value: formatCurrency(metrics.totalNeto), icon: 'fas fa-money-bill-wave', color: 'green' },
+                            { title: 'Deducciones', value: formatCurrency(metrics.totalDeductions), icon: 'fas fa-file-invoice-dollar', color: 'red' },
+                            { title: 'Incidencias Periodo', value: `${metrics.faltas} F, ${metrics.retardos} R`, icon: 'fas fa-exclamation-circle', color: 'yellow' }
+                        ].map((m, i) => (
+                            <div key={i} className="bg-white rounded-xl p-5 border border-slate-200 shadow-sm">
+                                <div className="flex items-start justify-between">
+                                    <div>
+                                        <p className="text-sm font-medium text-slate-500">{m.title}</p>
+                                        <p className={`text-2xl font-bold text-slate-800 mt-2 font-mono ${m.color === 'red' ? 'text-red-600' : m.color === 'green' ? 'text-emerald-600' : m.color === 'yellow' ? 'text-amber-600' : 'text-blue-600'}`}>{m.value}</p>
+                                    </div>
+                                    <div className={`w-12 h-12 rounded-lg flex items-center justify-center ${m.color === 'blue' ? 'bg-blue-100 text-blue-600' : m.color === 'green' ? 'bg-emerald-100 text-emerald-600' : m.color === 'red' ? 'bg-red-100 text-red-600' : 'bg-amber-100 text-amber-600'}`}>
+                                        <i className={`${m.icon} text-xl`}></i>
+                                    </div>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+
+                    <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-6">
+                        <h3 className="text-lg font-semibold text-slate-800 mb-4"><i className="fas fa-info-circle mr-2 text-blue-500"></i>Notas de Periodo</h3>
+                        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 text-sm text-blue-800">
+                            <p className="font-semibold mb-2">📋 Regla de Retardos Aplicable</p>
+                            <p>De acuerdo con la política interna escolar: <strong>3 retardos equivalen a 1 falta</strong> para efectos de deducción en nómina. Las incapacidades IMSS se descuentan proporcionalmente al salario base. Los permisos con goce de sueldo no generan deducción.</p>
+                        </div>
+                    </div>
+                </div>
+            );
+        }
+
+        function Directorio({ employees, incidences, period, setView }) {
+            return (
+                <div className="space-y-6 fade-in">
+                    <div className="flex items-center justify-between">
+                        <div>
+                            <h2 className="text-2xl font-bold text-slate-800">Directorio de Personal</h2>
+                            <p className="text-slate-500 mt-1">Gestión de empleados e incidencias</p>
+                        </div>
+                        <button onClick={() => setView('prenomina')} className="bg-emerald-600 hover:bg-emerald-700 text-white px-5 py-2.5 rounded-lg font-medium shadow-sm transition-colors flex items-center space-x-2">
+                            <i className="fas fa-calculator"></i>
+                            <span>Ver Pre-nómina</span>
+                        </button>
+                    </div>
+
+                    <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+                        <table className="w-full">
+                            <thead className="bg-slate-50">
+                                <tr>
+                                    <th className="text-left py-3 px-6 text-xs font-semibold text-slate-500 uppercase tracking-wider">ID</th>
+                                    <th className="text-left py-3 px-6 text-xs font-semibold text-slate-500 uppercase tracking-wider">Nombre Completo</th>
+                                    <th className="text-left py-3 px-6 text-xs font-semibold text-slate-500 uppercase tracking-wider">Puesto</th>
+                                    <th className="text-left py-3 px-6 text-xs font-semibold text-slate-500 uppercase tracking-wider">Tipo de Pago</th>
+                                    <th className="text-right py-3 px-6 text-xs font-semibold text-slate-500 uppercase tracking-wider">Base / Tarifa</th>
+                                    <th className="text-center py-3 px-6 text-xs font-semibold text-slate-500 uppercase tracking-wider">Incidencias</th>
+                                    <th className="text-right py-3 px-6 text-xs font-semibold text-slate-500 uppercase tracking-wider">Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody className="divide-y divide-slate-100">
+                                {employees.map(emp => {
+                                    const periodIncidences = incidences.filter(i => i.empleadoId === emp.id && isInPeriod(i.fecha, period));
+                                    return (
+                                        <tr key={emp.id} className="hover:bg-slate-50 transition-colors">
+                                            <td className="py-4 px-6 font-mono text-sm text-slate-600">{emp.id}</td>
+                                            <td className="py-4 px-6">
+                                                <div className="font-medium text-slate-800">{emp.nombre}</div>
+                                                <div className="text-xs text-slate-500">RFC: {emp.rfc}</div>
+                                            </td>
+                                            <td className="py-4 px-6 text-sm text-slate-600">{emp.puesto}</td>
+                                            <td className="py-4 px-6">
+                                                <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${emp.tipoPago === 'fijo' ? 'bg-blue-100 text-blue-800' : 'bg-purple-100 text-purple-800'}`}>
+                                                    {emp.tipoPago === 'fijo' ? 'Fijo Mensual' : 'Por Hora'}
+                                                </span>
+                                            </td>
+                                            <td className="py-4 px-6 text-right font-mono font-semibold text-slate-800">
+                                                {emp.tipoPago === 'fijo' ? formatCurrency(emp.salarioBase) : `${formatCurrency(emp.salarioBase)}/hr`}
+                                            </td>
+                                            <td className="py-4 px-6 text-center">
+                                                {periodIncidences.length > 0 ? (
+                                                    <span className="inline-flex items-center justify-center w-8 h-8 bg-red-100 text-red-700 rounded-full text-xs font-bold" title={`${periodIncidences.length} incidencias`}>
+                                                        {periodIncidences.length}
+                                                    </span>
+                                                ) : (
+                                                    <span className="text-xs text-slate-400">0</span>
+                                                )}
+                                            </td>
+                                            <td className="py-4 px-6 text-right">
+                                                <button onClick={() => setView('incidencia')} data-empId={emp.id} className="text-emerald-600 hover:text-emerald-700 font-medium text-sm transition-colors">
+                                                    <i className="fas fa-plus-circle mr-1"></i> Registrar
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    );
+                                })}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            );
+        }
+
+        function IncidenciaModal({ employee, onClose, onSave, period }) {
+            const [form, setForm] = useState({ fecha: new Date().toISOString().split('T')[0], tipo: 'retardo', notas: '' });
+            const [success, setSuccess] = useState(false);
+
+            const handleSubmit = (e) => {
+                e.preventDefault();
+                onSave({
+                    ...form,
+                    empleadoId: employee.id,
+                    id: 'INC' + Date.now()
+                });
+                setSuccess(true);
+                setTimeout(onClose, 1200);
+            };
+
+            if (success) {
+                return (
+                    <div className="modal-backdrop fixed inset-0 z-50 flex items-center justify-center p-4">
+                        <div className="bg-white rounded-2xl p-8 max-w-sm w-full text-center shadow-2xl fade-in">
+                            <div className="w-16 h-16 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                                <i className="fas fa-check text-emerald-600 text-2xl"></i>
+                            </div>
+                            <h3 className="text-xl font-bold text-slate-800 mb-2">Incidencia Registrada</h3>
+                            <p className="text-slate-500 mb-4">La incidencia ha sido guardada exitosamente y aparecerá en la pre-nómina del periodo seleccionado.</p>
+                        </div>
+                    </div>
+                );
+            }
+
+            return (
+                <div className="modal-backdrop fixed inset-0 z-50 flex items-center justify-center p-4">
+                    <div className="bg-white rounded-2xl w-full max-w-lg shadow-2xl fade-in" onClick={e => e.stopPropagation()}>
+                        <div className="px-6 py-4 border-b border-slate-200 flex items-center justify-between bg-slate-50 rounded-t-2xl">
+                            <h3 className="text-lg font-bold text-slate-800"><i className="fas fa-exclamation-triangle mr-2 text-amber-500"></i>Registrar Incidencia</h3>
+                            <button onClick={onClose} className="text-slate-400 hover:text-slate-600"><i className="fas fa-times text-xl"></i></button>
+                        </div>
+                        <form onSubmit={handleSubmit} className="p-6 space-y-5">
+                            <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
+                                <p className="text-sm text-blue-800 font-semibold">{employee.nombre}</p>
+                                <p className="text-xs text-blue-600">{employee.puesto} • {employee.tipoPago === 'fijo' ? 'Fijo Mensual' : 'Por Hora'}</p>
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium text-slate-700 mb-1.5">Fecha</label>
+                                <input type="date" className="w-full px-4 py-2.5 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" value={form.fecha} onChange={e => setForm({...form, fecha: e.target.value})} required />
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium text-slate-700 mb-1.5">Tipo de Incidencia</label>
+                                <select className="w-full px-4 py-2.5 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none bg-white" value={form.tipo} onChange={e => setForm({...form, tipo: e.target.value})} required>
+                                    <option value="retardo">Retardo</option>
+                                    <option value="falta_injustificada">Falta Injustificada</option>
+                                    <option value="incapacidad_imss">Incapacidad IMSS</option>
+                                    <option value="permiso">Permiso</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium text-slate-700 mb-1.5">Notas / Observaciones</label>
+                                <textarea className="w-full px-4 py-2.5 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none resize-none" rows="3" placeholder="Detalle de la incidencia..." value={form.notas} onChange={e => setForm({...form, notas: e.target.value})}></textarea>
+                            </div>
+                            <div className="flex items-center justify-end space-x-3 pt-4 border-t border-slate-100">
+                                <button type="button" onClick={onClose} className="px-6 py-2.5 border border-slate-200 text-slate-600 rounded-lg hover:bg-slate-50 transition-colors font-medium">Cancelar</button>
+                                <button type="submit" className="px-6 py-2.5 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition-colors font-medium shadow-sm"><i className="fas fa-save mr-2"></i>Guardar</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            );
+        }
+
+        function PreNomina({ employees, incidences, period }) {
+            const calculations = useMemo(() => employees.map(emp => calcPrePayroll(emp, incidences, period)), [employees, incidences, period]);
+            const totals = useMemo(() => calculations.reduce((acc, c) => ({ base: acc.base + c.base, deduccion: acc.deduccion + c.deduccion, neto: acc.neto + c.neto }), { base: 0, deduccion: 0, neto: 0 }), [calculations]);
+
+            return (
+                <div className="space-y-6 fade-in">
+                    <div className="flex items-center justify-between">
+                        <div>
+                            <h2 className="text-2xl font-bold text-slate-800">Cálculo de Pre-nómina</h2>
+                            <p className="text-slate-500 mt-1">Periodo: {getPeriodLabel(period)}</p>
+                        </div>
+                        <button onClick={() => window.print()} className="bg-slate-600 hover:bg-slate-700 text-white px-5 py-2.5 rounded-lg font-medium shadow-sm transition-colors flex items-center space-x-2">
+                            <i className="fas fa-print"></i>
+                            <span>Imprimir / Exportar</span>
+                        </button>
+                    </div>
+
+                    <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden print:border-0">
+                        <table className="w-full text-sm">
+                            <thead className="bg-slate-100 text-slate-700 font-semibold">
+                                <tr>
+                                    <th className="py-3 px-4 text-left">Empleado</th>
+                                    <th className="py-3 px-4 text-left">Puesto</th>
+                                    <th className="py-3 px-4 text-center">Retardos</th>
+                                    <th className="py-3 px-4 text-center">Faltas</th>
+                                    <th className="py-3 px-4 text-center">Incap.</th>
+                                    <th className="py-3 px-4 text-right">Percepciones</th>
+                                    <th className="py-3 px-4 text-right">Deducciones</th>
+                                    <th className="py-3 px-4 text-right font-bold">Neto a Pagar</th>
+                                </tr>
+                            </thead>
+                            <tbody className="divide-y divide-slate-100">
+                                {calculations.map(calc => (
+                                    <tr key={calc.empleado.id} className="hover:bg-slate-50">
+                                        <td className="py-3 px-4">
+                                            <div className="font-semibold text-slate-800">{calc.empleado.nombre}</div>
+                                            <div className="text-xs text-slate-500">{calc.empleado.id} • {calc.empleado.rfc}</div>
+                                        </td>
+                                        <td className="py-3 px-4 text-slate-600">{calc.empleado.puesto}</td>
+                                        <td className="py-3 px-4 text-center">
+                                            <span className="inline-flex items-center justify-center px-2 py-1 bg-amber-50 text-amber-700 rounded font-bold text-xs">{calc.retardos}</span>
+                                            {calc.retardos >= 3 && <div className="text-[10px] text-amber-600 mt-0.5">= {Math.floor(calc.retardos/3)} F</div>}
+                                        </td>
+                                        <td className="py-3 px-4 text-center"><span className="inline-flex items-center justify-center px-2 py-1 bg-red-50 text-red-700 rounded font-bold text-xs">{calc.faltas}</span></td>
+                                        <td className="py-3 px-4 text-center"><span className="inline-flex items-center justify-center px-2 py-1 bg-blue-50 text-blue-700 rounded font-bold text-xs">{calc.incapacidades}</span></td>
+                                        <td className="py-3 px-4 text-right font-mono text-slate-700">{formatCurrency(calc.base)}</td>
+                                        <td className="py-3 px-4 text-right font-mono text-red-600">{calc.deduccion > 0 ? `- ${formatCurrency(calc.deduccion)}` : '-'}</td>
+                                        <td className="py-3 px-4 text-right font-mono font-bold text-emerald-700">{formatCurrency(calc.neto)}</td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                            <tfoot className="bg-slate-50 font-bold text-slate-800">
+                                <tr>
+                                    <td colSpan="5" className="py-4 px-4 text-right">TOTALES DEL PERIODO:</td>
+                                    <td className="py-4 px-4 text-right font-mono">{formatCurrency(totals.base)}</td>
+                                    <td className="py-4 px-4 text-right font-mono text-red-600">- {formatCurrency(totals.deduccion)}</td>
+                                    <td className="py-4 px-4 text-right font-mono text-emerald-700 text-base">{formatCurrency(totals.neto)}</td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                    
+                    <div className="bg-slate-50 border border-slate-200 rounded-lg p-4 text-xs text-slate-500 print:hidden">
+                        <i className="fas fa-info-circle mr-1"></i> 
+                        <strong>Nota:</strong> Este documento es una pre-nómina para efectos de revisión interna. Las deducciones por faltas se calculan dividiendo el salario mensual entre 30 días. 
+                        3 retardos equivalen a 1 falta. Los permisos no generan deducción automática salvo acuerdo específico.
+                    </div>
+                </div>
+            );
+        }
+
+        // ============================================================================
+        // MAIN APP
+        // ============================================================================
+        function App() {
+            const [view, setView] = useState('dashboard');
+            const [employees, setEmployees] = useState([]);
+            const [incidences, setIncidences] = useState([]);
+            const [period, setPeriod] = useState({ year: 2024, month: 4, quincena: 1 }); // Mock default
+            const [showIncidenciaModal, setShowIncidenciaModal] = useState(false);
+            const [selectedEmpId, setSelectedEmpId] = useState(null);
+
+            useEffect(() => {
+                setEmployees(Storage.get(STORAGE_KEYS.EMPLOYEES, []));
+                setIncidences(Storage.get(STORAGE_KEYS.INCIDENCES, []));
+                setPeriod(Storage.get(STORAGE_KEYS.PERIOD, { year: 2024, month: 4, quincena: 1 }));
+            }, []);
+
+            useEffect(() => { if (employees.length) Storage.set(STORAGE_KEYS.EMPLOYEES, employees); }, [employees]);
+            useEffect(() => { if (incidences.length) Storage.set(STORAGE_KEYS.INCIDENCES, incidences); }, [incidences]);
+            useEffect(() => { Storage.set(STORAGE_KEYS.PERIOD, period); }, [period]);
+
+            const addIncidencia = (inc) => {
+                setIncidences([...incidences, inc]);
+                setShowIncidenciaModal(false);
+                setSelectedEmpId(null);
+            };
+
+            const openIncidenciaModal = (e) => {
+                const btn = e.currentTarget.closest('button');
+                const empId = btn.closest('tr').querySelector('td:first-child').textContent.trim();
+                setSelectedEmpId(empId);
+                setShowIncidenciaModal(true);
+            };
+
+            useEffect(() => {
+                const dirView = document.querySelector('[data-page="directorio"]');
+                if (dirView) dirView.addEventListener('click', openIncidenciaModal);
+                return () => { if (dirView) dirView.removeEventListener('click', openIncidenciaModal); };
+            }, [view]);
+
+            // Better event handling: pass directly in JSX if possible, but since table is in Directorio component:
+            // We'll modify Directorio to accept onAddIncident prop to avoid complex event delegation.
+            // Actually, let's refactor Directorio to accept a prop for simplicity.
+            
+            return (
+                <div className="min-h-screen bg-slate-100 flex">
+                    <Header currentView={view} setView={setView} period={period} setPeriod={setPeriod} />
+                    <main className="flex-1 p-8 overflow-y-auto">
+                        <div className="max-w-7xl mx-auto">
+                            {view === 'dashboard' && <Dashboard employees={employees} incidences={incidences} period={period} />}
+                            {view === 'directorio' && <Directorio employees={employees} incidences={incidences} period={period} onAddIncident={(id) => { setSelectedEmpId(id); setShowIncidenciaModal(true); }} />}
+                            {view === 'prenomina' && <PreNomina employees={employees} incidences={incidences} period={period} />}
+                        </div>
+                    </main>
+                    {showIncidenciaModal && selectedEmpId && (
+                        <IncidenciaModal employee={employees.find(e => e.id === selectedEmpId)} onClose={() => { setShowIncidenciaModal(false); setSelectedEmpId(null); }} onSave={addIncidencia} period={period} />
+                    )}
+                </div>
+            );
+        }
+        
+        // Fix: Pass onAddIncident properly
+        const OriginalDirectorio = Directorio;
+        Directorio = ({ employees, incidences, period, onAddIncident }) => {
+            return (
+                <div className="space-y-6 fade-in">
+                    <div className="flex items-center justify-between">
+                        <div>
+                            <h2 className="text-2xl font-bold text-slate-800">Directorio de Personal</h2>
+                            <p className="text-slate-500 mt-1">Gestión de empleados e incidencias</p>
+                        </div>
+                        <button onClick={() => window.location.hash = '#prenomina'} className="bg-emerald-600 hover:bg-emerald-700 text-white px-5 py-2.5 rounded-lg font-medium shadow-sm transition-colors flex items-center space-x-2">
+                            <i className="fas fa-calculator"></i><span>Ver Pre-nómina</span>
+                        </button>
+                    </div>
+                    <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+                        <table className="w-full">
+                            <thead className="bg-slate-50">
+                                <tr>
+                                    <th className="text-left py-3 px-6 text-xs font-semibold text-slate-500 uppercase tracking-wider">ID</th>
+                                    <th className="text-left py-3 px-6 text-xs font-semibold text-slate-500 uppercase tracking-wider">Nombre Completo</th>
+                                    <th className="text-left py-3 px-6 text-xs font-semibold text-slate-500 uppercase tracking-wider">Puesto</th>
+                                    <th className="text-left py-3 px-6 text-xs font-semibold text-slate-500 uppercase tracking-wider">Tipo de Pago</th>
+                                    <th className="text-right py-3 px-6 text-xs font-semibold text-slate-500 uppercase tracking-wider">Base / Tarifa</th>
+                                    <th className="text-center py-3 px-6 text-xs font-semibold text-slate-500 uppercase tracking-wider">Incidencias</th>
+                                    <th className="text-right py-3 px-6 text-xs font-semibold text-slate-500 uppercase tracking-wider">Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody className="divide-y divide-slate-100">
+                                {employees.map(emp => {
+                                    const periodIncidences = incidences.filter(i => i.empleadoId === emp.id && isInPeriod(i.fecha, period));
+                                    return (
+                                        <tr key={emp.id} className="hover:bg-slate-50 transition-colors">
+                                            <td className="py-4 px-6 font-mono text-sm text-slate-600">{emp.id}</td>
+                                            <td className="py-4 px-6"><div className="font-medium text-slate-800">{emp.nombre}</div><div className="text-xs text-slate-500">RFC: {emp.rfc}</div></td>
+                                            <td className="py-4 px-6 text-sm text-slate-600">{emp.puesto}</td>
+                                            <td className="py-4 px-6"><span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${emp.tipoPago === 'fijo' ? 'bg-blue-100 text-blue-800' : 'bg-purple-100 text-purple-800'}`}>{emp.tipoPago === 'fijo' ? 'Fijo Mensual' : 'Por Hora'}</span></td>
+                                            <td className="py-4 px-6 text-right font-mono font-semibold text-slate-800">{emp.tipoPago === 'fijo' ? formatCurrency(emp.salarioBase) : `${formatCurrency(emp.salarioBase)}/hr`}</td>
+                                            <td className="py-4 px-6 text-center">{periodIncidences.length > 0 ? <span className="inline-flex items-center justify-center w-8 h-8 bg-red-100 text-red-700 rounded-full text-xs font-bold">{periodIncidences.length}</span> : <span className="text-xs text-slate-400">0</span>}</td>
+                                            <td className="py-4 px-6 text-right"><button onClick={() => onAddIncident(emp.id)} className="text-emerald-600 hover:text-emerald-700 font-medium text-sm transition-colors"><i className="fas fa-plus-circle mr-1"></i> Registrar</button></td>
+                                        </tr>
+                                    );
+                                })}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            );
+        };
+
+        // Fix App to pass prop correctly
+        const RootApp = () => {
+            const [view, setView] = useState('dashboard');
+            const [employees, setEmployees] = useState([]);
+            const [incidences, setIncidences] = useState([]);
+            const [period, setPeriod] = useState({ year: 2026, month: 3, quincena: 2 }); // May 2026, 2nd half
+            const [showIncidenciaModal, setShowIncidenciaModal] = useState(false);
+            const [selectedEmpId, setSelectedEmpId] = useState(null);
+
+            useEffect(() => {
+                setEmployees(Storage.get(STORAGE_KEYS.EMPLOYEES, []));
+                setIncidences(Storage.get(STORAGE_KEYS.INCIDENCES, []));
+                const now = new Date();
+                setPeriod({ year: now.getFullYear(), month: now.getMonth(), quincena: now.getDate() >= 16 ? 2 : 1 });
+            }, []);
+
+            const addIncidencia = (inc) => {
+                setIncidences(prev => [...prev, inc]);
+                setShowIncidenciaModal(false);
+                setSelectedEmpId(null);
+            };
+
+            return (
+                <div className="min-h-screen bg-slate-100 flex">
+                    <Header currentView={view} setView={setView} period={period} setPeriod={setPeriod} />
+                    <main className="flex-1 p-8 overflow-y-auto">
+                        <div className="max-w-7xl mx-auto">
+                            {view === 'dashboard' && <Dashboard employees={employees} incidences={incidences} period={period} />}
+                            {view === 'directorio' && <Directorio employees={employees} incidences={incidences} period={period} onAddIncident={(id) => { setSelectedEmpId(id); setShowIncidenciaModal(true); }} />}
+                            {view === 'prenomina' && <PreNomina employees={employees} incidences={incidences} period={period} />}
+                        </div>
+                    </main>
+                    {showIncidenciaModal && selectedEmpId && (
+                        <IncidenciaModal employee={employees.find(e => e.id === selectedEmpId)} onClose={() => { setShowIncidenciaModal(false); setSelectedEmpId(null); }} onSave={addIncidencia} period={period} />
+                    )}
+                </div>
+            );
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<RootApp />);
+    </script>
+</body>
+</html>
+```

@@ -4,6 +4,7 @@ import { DashboardView } from './components/DashboardView';
 import { DirectoryView } from './components/DirectoryView';
 import { EnrollmentView } from './components/EnrollmentView';
 import { NetworkView } from './components/NetworkView';
+import { NewStudentModal } from './components/NewStudentModal';
 
 export const AdminApp: React.FC = () => {
   const [activeView, setActiveView] = useState<'dashboard'|'directorio'|'inscripciones'|'red'>('dashboard');
@@ -85,6 +86,8 @@ export const AdminApp: React.FC = () => {
           {activeView === 'red' && <NetworkView />}
         </div>
       </main>
+
+      <NewStudentModal />
     </div>
   );
 };

@@ -18,6 +18,7 @@ export const students = sqliteTable('students', {
   bloodType: text('blood_type'),
   medicalNotes: text('medical_notes'),
   status: text('status').notNull().default('Activo'), // Activo, Inactivo
+  balance: integer('balance').notNull().default(0), // Balance in cents to avoid floating point issues (e.g. 50000 = $500.00)
 });
 
 // Linking Table: Many-to-Many relationship between students and tutors
@@ -52,3 +53,45 @@ export const enrollments = sqliteTable('enrollments', {
     .references(() => groups.id),
   academicYear: text('academic_year').notNull(), // e.g., "2026-2027"
 });
+
+// ==========================================
+// POS (Point of Sale) Tables
+// ==========================================
+
+export const posCategories = sqliteTable('pos_categories', {
+  id: text('id').primaryKey(),
+  name: text('name').notNull(),
+  icon: text('icon').notNull(),
+  color: text('color').notNull(),
+});
+
+export const posProducts = sqliteTable('pos_products', {
+  id: text('id').primaryKey(),
+  categoryId: text('category_id')
+    .notNull()
+    .references(() => posCategories.id),
+  name: text('name').notNull(),
+  price: integer('price').notNull(), // Price in cents
+  icon: text('icon').notNull(),
+});
+
+export const posTickets = sqliteTable('pos_tickets', {
+  id: text('id').primaryKey(),
+  date: text('date').notNull(), // ISO string or unix timestamp
+  total: integer('total').notNull(), // Total in cents
+  paymentMethod: text('payment_method').notNull(), // 'cash' | 'student_balance'
+  studentId: text('student_id').references(() => students.id), // Optional, only if paid with balance
+});
+
+export const posTicketItems = sqliteTable('pos_ticket_items', {
+  id: text('id').primaryKey(),
+  ticketId: text('ticket_id')
+    .notNull()
+    .references(() => posTickets.id),
+  productId: text('product_id')
+    .notNull()
+    .references(() => posProducts.id),
+  quantity: integer('quantity').notNull(),
+  price: integer('price').notNull(), // Price per item in cents at time of sale
+});
+

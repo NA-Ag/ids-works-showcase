@@ -21,7 +21,8 @@ export const DashboardView: React.FC = () => {
   };
 
   const handleManualPayment = () => {
-    addActivity("Cobro de colegiatura registrado (Caja 01)", "finance");
+    const id = Math.floor(Math.random() * 10000).toString().padStart(4, '0');
+    addActivity(`Cobro de colegiatura #${id} registrado (Caja 01)`, "finance");
   };
 
   return (

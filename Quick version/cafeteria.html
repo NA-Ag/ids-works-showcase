@@ -1,0 +1,811 @@
+```html
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cooperativa Escolar - Punto de Venta</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- React & ReactDOM -->
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+    
+    <!-- Babel for JSX -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    
+    <style>
+        * { font-family: 'Inter', sans-serif; }
+        body { background: #f1f5f9; overflow: hidden; }
+        .font-mono { font-family: 'JetBrains Mono', monospace; }
+        
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: #e2e8f0; border-radius: 3px; }
+        ::-webkit-scrollbar-thumb { background: #94a3b8; border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: #64748b; }
+
+        .fade-in { animation: fadeIn 0.2s ease-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        
+        .modal-backdrop { background: rgba(15, 23, 42, 0.7); backdrop-filter: blur(4px); }
+        
+        .product-btn {
+            transition: all 0.1s;
+            border-bottom: 3px solid rgba(0,0,0,0.1);
+        }
+        .product-btn:active {
+            transform: translateY(2px);
+            border-bottom-width: 1px;
+        }
+        .product-btn:hover {
+            filter: brightness(0.95);
+        }
+
+        .category-tab.active {
+            background: #0f172a;
+            color: white;
+            border-bottom: 3px solid #10b981;
+        }
+
+        .ticket-item { animation: slideIn 0.2s ease-out; }
+        @keyframes slideIn { from { opacity: 0; transform: translateX(-10px); } to { opacity: 1; transform: translateX(0); } }
+
+        .cash-btn:active { transform: scale(0.98); }
+    </style>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        pos: {
+                            50: '#f0fdf4',
+                            100: '#dcfce7',
+                            200: '#bbf7d0',
+                            300: '#86efac',
+                            400: '#4ade80',
+                            500: '#22c55e',
+                            600: '#16a34a',
+                            700: '#15803d',
+                            800: '#166534',
+                            900: '#14532d',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        // ============================================================================
+        // DATA LAYER - localStorage
+        // ============================================================================
+        
+        const STORAGE = {
+            PRODUCTS: 'coop_products',
+            STUDENTS: 'coop_students',
+            TRANSACTIONS: 'coop_transactions',
+            SESSION: 'coop_session'
+        };
+
+        const Storage = {
+            get(key, def = null) {
+                try {
+                    const d = localStorage.getItem(key);
+                    return d ? JSON.parse(d) : def;
+                } catch { return def; }
+            },
+            set(key, val) {
+                try { localStorage.setItem(key, JSON.stringify(val)); } catch(e) { console.error(e); }
+            }
+        };
+
+        // ============================================================================
+        // MOCK DATA SEED
+        // ============================================================================
+
+        function seedData() {
+            if (!Storage.get(STORAGE.PRODUCTS)) {
+                const products = [
+                    // Comida
+                    { id: 'P001', nombre: 'Torta de Jamón', precio: 35, categoria: 'comida', icon: 'fa-bread-slice' },
+                    { id: 'P002', nombre: 'Torta de Milanesa', precio: 45, categoria: 'comida', icon: 'fa-drumstick-bite' },
+                    { id: 'P003', nombre: 'Orden de Tacos (3)', precio: 40, categoria: 'comida', icon: 'fa-pepper-hot' },
+                    { id: 'P004', nombre: 'Quesadilla de Queso', precio: 25, categoria: 'comida', icon: 'fa-cheese' },
+                    { id: 'P005', nombre: 'Quesadilla de Pollo', precio: 35, categoria: 'comida', icon: 'fa-cheese' },
+                    { id: 'P006', nombre: 'Torta de Huevo', precio: 30, categoria: 'comida', icon: 'fa-egg' },
+                    { id: 'P007', nombre: 'Sincronizada', precio: 35, categoria: 'comida', icon: 'fa-bacon' },
+                    { id: 'P008', nombre: 'Pambazo', precio: 25, categoria: 'comida', icon: 'fa-bread-slice' },
+                    
+                    // Bebidas
+                    { id: 'P009', nombre: 'Jugo Boing', precio: 15, categoria: 'bebidas', icon: 'fa-box-open' },
+                    { id: 'P010', nombre: 'Jugo Del Valle', precio: 18, categoria: 'bebidas', icon: 'fa-box-open' },
+                    { id: 'P011', nombre: 'Agua Natural 500ml', precio: 12, categoria: 'bebidas', icon: 'fa-bottle-water' },
+                    { id: 'P012', nombre: 'Agua Sabor 500ml', precio: 15, categoria: 'bebidas', icon: 'fa-bottle-water' },
+                    { id: 'P013', nombre: 'Refresco 600ml', precio: 20, categoria: 'bebidas', icon: 'fa-bottle-droplet' },
+                    { id: 'P014', nombre: 'Leche Chocolate', precio: 16, categoria: 'bebidas', icon: 'fa-mug-hot' },
+                    { id: 'P015', nombre: 'Néctar Manzana', precio: 18, categoria: 'bebidas', icon: 'fa-apple-whole' },
+                    
+                    // Snacks
+                    { id: 'P016', nombre: 'Papas Sabritas', precio: 18, categoria: 'snacks', icon: 'fa-bag-shopping' },
+                    { id: 'P017', nombre: 'Doritos', precio: 18, categoria: 'snacks', icon: 'fa-bag-shopping' },
+                    { id: 'P018', nombre: 'Cheetos', precio: 18, categoria: 'snacks', icon: 'fa-bag-shopping' },
+                    { id: 'P019', nombre: 'Galletas Marías', precio: 12, categoria: 'snacks', icon: 'fa-cookie' },
+                    { id: 'P020', nombre: 'Galletas Oreo', precio: 15, categoria: 'snacks', icon: 'fa-cookie' },
+                    { id: 'P021', nombre: 'Palomitas', precio: 14, categoria: 'snacks', icon: 'fa-popcorn' },
+                    { id: 'P022', nombre: 'Cacahuates Salados', precio: 12, categoria: 'snacks', icon: 'fa-seedling' },
+                    { id: 'P023', nombre: 'Gelatina', precio: 10, categoria: 'snacks', icon: 'fa-cubes' },
+                ];
+                Storage.set(STORAGE.PRODUCTS, products);
+            }
+
+            if (!Storage.get(STORAGE.STUDENTS)) {
+                const students = [
+                    { id: 'ALU001', nombre: 'Sofía Martínez Ruiz', saldo: 500, grado: '3° Primaria' },
+                    { id: 'ALU002', nombre: 'Diego Hernández Vega', saldo: 750, grado: '5° Primaria' },
+                    { id: 'ALU003', nombre: 'María Fernanda Torres', saldo: 300, grado: '1° Secundaria' },
+                ];
+                Storage.set(STORAGE.STUDENTS, students);
+            }
+
+            if (!Storage.get(STORAGE.TRANSACTIONS)) {
+                Storage.set(STORAGE.TRANSACTIONS, []);
+            }
+        }
+
+        seedData();
+
+        // ============================================================================
+        // UTILITY FUNCTIONS
+        // ============================================================================
+
+        const formatCurrency = (amount) => {
+            return new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN', minimumFractionDigits: 2 }).format(amount);
+        };
+
+        const CATEGORIES = [
+            { id: 'comida', name: 'Comida', icon: 'fa-utensils', color: 'from-orange-500 to-red-500' },
+            { id: 'bebidas', name: 'Bebidas', icon: 'fa-glass-water', color: 'from-blue-400 to-cyan-500' },
+            { id: 'snacks', name: 'Snacks', icon: 'fa-cookie-bite', color: 'from-yellow-400 to-amber-500' }
+        ];
+
+        // ============================================================================
+        // REACT COMPONENTS
+        // ============================================================================
+
+        const { useState, useEffect, useMemo, useCallback } = React;
+
+        // --- Header ---
+        function Header({ onCorteDeCaja }) {
+            return (
+                <header className="bg-slate-800 text-white px-4 py-3 flex items-center justify-between shadow-lg">
+                    <div className="flex items-center space-x-3">
+                        <div className="w-10 h-10 bg-emerald-500 rounded-lg flex items-center justify-center">
+                            <i className="fas fa-store text-white text-lg"></i>
+                        </div>
+                        <div>
+                            <h1 className="text-lg font-bold">Cooperativa Escolar</h1>
+                            <p className="text-xs text-slate-400">Punto de Venta</p>
+                        </div>
+                    </div>
+                    <div className="flex items-center space-x-4">
+                        <div className="text-right hidden md:block">
+                            <p className="text-sm font-medium">{new Date().toLocaleDateString('es-MX', { weekday: 'long', day: 'numeric', month: 'long' })}</p>
+                            <p className="text-xs text-slate-400 font-mono"><Clock /></p>
+                        </div>
+                        <button 
+                            onClick={onCorteDeCaja}
+                            className="bg-slate-700 hover:bg-slate-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center space-x-2 border border-slate-600"
+                        >
+                            <i className="fas fa-cash-register"></i>
+                            <span className="hidden sm:inline">Corte de Caja</span>
+                        </button>
+                    </div>
+                </header>
+            );
+        }
+
+        function Clock() {
+            const [time, setTime] = useState(new Date().toLocaleTimeString('es-MX', { hour: '2-digit', minute: '2-digit', second: '2-digit' }));
+            useEffect(() => {
+                const interval = setInterval(() => {
+                    setTime(new Date().toLocaleTimeString('es-MX', { hour: '2-digit', minute: '2-digit', second: '2-digit' }));
+                }, 1000);
+                return () => clearInterval(interval);
+            }, []);
+            return <span>{time}</span>;
+        }
+
+        // --- Product Grid ---
+        function ProductGrid({ selectedCategory, setSelectedCategory, onAddToCart, products }) {
+            const filteredProducts = selectedCategory === 'todos' 
+                ? products 
+                : products.filter(p => p.categoria === selectedCategory);
+
+            const getCategoryColor = (catId) => {
+                const cat = CATEGORIES.find(c => c.id === catId);
+                return cat ? cat.color : 'from-gray-400 to-gray-500';
+            };
+
+            return (
+                <div className="flex flex-col h-full">
+                    {/* Category Tabs */}
+                    <div className="flex space-x-1 bg-slate-200 p-1 rounded-lg">
+                        <button 
+                            onClick={() => setSelectedCategory('todos')}
+                            className={`flex-1 py-3 px-4 rounded-md text-sm font-semibold transition-all ${selectedCategory === 'todos' ? 'bg-slate-800 text-white shadow-md' : 'text-slate-600 hover:bg-slate-300'}`}
+                        >
+                            <i className="fas fa-th-large mr-2"></i>Todos
+                        </button>
+                        {CATEGORIES.map(cat => (
+                            <button 
+                                key={cat.id}
+                                onClick={() => setSelectedCategory(cat.id)}
+                                className={`flex-1 py-3 px-4 rounded-md text-sm font-semibold transition-all ${selectedCategory === cat.id ? 'bg-slate-800 text-white shadow-md' : 'text-slate-600 hover:bg-slate-300'}`}
+                            >
+                                <i className={`fas ${cat.icon} mr-2`}></i>{cat.name}
+                            </button>
+                        ))}
+                    </div>
+
+                    {/* Product Grid */}
+                    <div className="flex-1 overflow-y-auto p-3">
+                        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+                            {filteredProducts.map(product => (
+                                <button 
+                                    key={product.id}
+                                    onClick={() => onAddToCart(product)}
+                                    className="product-btn bg-white rounded-xl p-4 shadow-sm border border-slate-200 hover:shadow-md flex flex-col items-center justify-center text-center group min-h-[120px]"
+                                >
+                                    <div className={`w-12 h-12 rounded-lg bg-gradient-to-br ${getCategoryColor(product.categoria)} flex items-center justify-center mb-3 group-hover:scale-110 transition-transform`}>
+                                        <i className={`fas ${product.icon} text-white text-lg`}></i>
+                                    </div>
+                                    <h3 className="font-semibold text-slate-800 text-sm leading-tight mb-1">{product.nombre}</h3>
+                                    <p className="text-emerald-600 font-bold font-mono text-base">{formatCurrency(product.precio)}</p>
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+            );
+        }
+
+        // --- Ticket / Cart ---
+        function Ticket({ items, onUpdateQuantity, onRemove, onCheckout }) {
+            const total = items.reduce((sum, item) => sum + (item.precio * item.cantidad), 0);
+
+            return (
+                <div className="bg-white h-full flex flex-col shadow-xl border-l border-slate-200">
+                    {/* Ticket Header */}
+                    <div className="bg-slate-50 px-4 py-3 border-b border-slate-200 flex items-center justify-between">
+                        <div className="flex items-center space-x-2">
+                            <i className="fas fa-receipt text-slate-600"></i>
+                            <h2 className="font-bold text-slate-800">Ticket Actual</h2>
+                        </div>
+                        <span className="bg-slate-200 text-slate-700 text-xs font-bold px-2 py-1 rounded-full">
+                            {items.reduce((sum, i) => sum + i.cantidad, 0)} productos
+                        </span>
+                    </div>
+
+                    {/* Ticket Items */}
+                    <div className="flex-1 overflow-y-auto p-3 space-y-2">
+                        {items.length === 0 ? (
+                            <div className="flex flex-col items-center justify-center h-full text-slate-400">
+                                <i className="fas fa-cart-shopping text-4xl mb-3 opacity-30"></i>
+                                <p className="text-sm">Agrega productos al ticket</p>
+                            </div>
+                        ) : (
+                            items.map(item => (
+                                <div key={item.id} className="ticket-item bg-slate-50 rounded-lg p-3 border border-slate-100">
+                                    <div className="flex items-start justify-between mb-2">
+                                        <div className="flex-1">
+                                            <h3 className="font-semibold text-slate-800 text-sm">{item.nombre}</h3>
+                                            <p className="text-xs text-slate-500 font-mono">{formatCurrency(item.precio)} c/u</p>
+                                        </div>
+                                        <button onClick={() => onRemove(item.id)} className="text-red-400 hover:text-red-600 ml-2 transition-colors">
+                                            <i className="fas fa-trash-alt"></i>
+                                        </button>
+                                    </div>
+                                    <div className="flex items-center justify-between">
+                                        <div className="flex items-center space-x-2 bg-white rounded-lg border border-slate-200 p-1">
+                                            <button 
+                                                onClick={() => onUpdateQuantity(item.id, item.cantidad - 1)}
+                                                className="w-8 h-8 flex items-center justify-center rounded-md bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold transition-colors"
+                                            >
+                                                <i className="fas fa-minus text-xs"></i>
+                                            </button>
+                                            <span className="w-8 text-center font-bold text-slate-800 font-mono">{item.cantidad}</span>
+                                            <button 
+                                                onClick={() => onUpdateQuantity(item.id, item.cantidad + 1)}
+                                                className="w-8 h-8 flex items-center justify-center rounded-md bg-emerald-100 hover:bg-emerald-200 text-emerald-700 font-bold transition-colors"
+                                            >
+                                                <i className="fas fa-plus text-xs"></i>
+                                            </button>
+                                        </div>
+                                        <span className="font-bold text-slate-800 font-mono">{formatCurrency(item.precio * item.cantidad)}</span>
+                                    </div>
+                                </div>
+                            ))
+                        )}
+                    </div>
+
+                    {/* Ticket Footer */}
+                    <div className="border-t border-slate-200 p-4 bg-slate-50">
+                        <div className="flex items-center justify-between mb-4">
+                            <span className="text-lg font-bold text-slate-700">Total a Cobrar</span>
+                            <span className="text-2xl font-bold text-emerald-600 font-mono">{formatCurrency(total)}</span>
+                        </div>
+                        <button 
+                            onClick={onCheckout}
+                            disabled={items.length === 0}
+                            className={`w-full py-4 rounded-xl text-lg font-bold shadow-lg transition-all flex items-center justify-center space-x-2 ${
+                                items.length === 0 
+                                    ? 'bg-slate-300 text-slate-500 cursor-not-allowed' 
+                                    : 'bg-emerald-600 hover:bg-emerald-700 text-white shadow-emerald-200 active:scale-[0.98]'
+                            }`}
+                        >
+                            <i className="fas fa-cash-register"></i>
+                            <span>Cobrar</span>
+                        </button>
+                    </div>
+                </div>
+            );
+        }
+
+        // --- Checkout Modal ---
+        function CheckoutModal({ items, total, onClose, onCompletePayment, students }) {
+            const [paymentMethod, setPaymentMethod] = useState('cash');
+            const [cashAmount, setCashAmount] = useState('');
+            const [selectedStudent, setSelectedStudent] = useState('');
+            const [studentSearch, setStudentSearch] = useState('');
+
+            const cashNum = parseFloat(cashAmount) || 0;
+            const change = cashNum - total;
+            const changeColor = change >= 0 ? 'text-emerald-600' : 'text-red-600';
+
+            const filteredStudents = students.filter(s => 
+                s.nombre.toLowerCase().includes(studentSearch.toLowerCase()) || 
+                s.id.toLowerCase().includes(studentSearch.toLowerCase())
+            );
+
+            const selectedStudentData = students.find(s => s.id === selectedStudent);
+
+            const quickBills = [50, 100, 200, 500];
+
+            const handleCheckout = () => {
+                if (paymentMethod === 'cash') {
+                    if (cashNum < total) {
+                        alert('El monto recibido es menor al total.');
+                        return;
+                    }
+                    onCompletePayment({
+                        method: 'efectivo',
+                        montoRecibido: cashNum,
+                        cambio: change,
+                        items: items,
+                        total: total
+                    });
+                } else {
+                    if (!selectedStudent) {
+                        alert('Selecciona un alumno.');
+                        return;
+                    }
+                    if (selectedStudentData.saldo < total) {
+                        alert(`El alumno no tiene saldo suficiente. Saldo actual: ${formatCurrency(selectedStudentData.saldo)}`);
+                        return;
+                    }
+                    onCompletePayment({
+                        method: 'saldo_alumno',
+                        alumnoId: selectedStudent,
+                        alumnoNombre: selectedStudentData.nombre,
+                        saldoAnterior: selectedStudentData.saldo,
+                        items: items,
+                        total: total
+                    });
+                }
+            };
+
+            return (
+                <div className="modal-backdrop fixed inset-0 z-50 flex items-center justify-center p-4 fade-in">
+                    <div className="bg-white rounded-2xl w-full max-w-3xl max-h-[90vh] overflow-hidden shadow-2xl flex flex-col" onClick={e => e.stopPropagation()}>
+                        {/* Modal Header */}
+                        <div className="bg-slate-800 text-white px-6 py-4 flex items-center justify-between">
+                            <h2 className="text-xl font-bold"><i className="fas fa-cash-register mr-2"></i>Cobrar</h2>
+                            <button onClick={onClose} className="text-slate-400 hover:text-white transition-colors">
+                                <i className="fas fa-times text-xl"></i>
+                            </button>
+                        </div>
+
+                        {/* Payment Method Tabs */}
+                        <div className="flex border-b border-slate-200">
+                            <button 
+                                onClick={() => setPaymentMethod('cash')}
+                                className={`flex-1 py-4 text-center font-semibold transition-colors flex items-center justify-center space-x-2 ${paymentMethod === 'cash' ? 'bg-emerald-50 text-emerald-700 border-b-3 border-emerald-500' : 'text-slate-500 hover:bg-slate-50'}`}
+                            >
+                                <i className="fas fa-money-bill-wave text-lg"></i>
+                                <span>Efectivo</span>
+                            </button>
+                            <button 
+                                onClick={() => setPaymentMethod('student')}
+                                className={`flex-1 py-4 text-center font-semibold transition-colors flex items-center justify-center space-x-2 ${paymentMethod === 'student' ? 'bg-blue-50 text-blue-700 border-b-3 border-blue-500' : 'text-slate-500 hover:bg-slate-50'}`}
+                            >
+                                <i className="fas fa-id-card text-lg"></i>
+                                <span>Saldo Alumno</span>
+                            </button>
+                        </div>
+
+                        {/* Payment Content */}
+                        <div className="flex-1 overflow-y-auto p-6">
+                            {/* Total Display */}
+                            <div className="bg-slate-50 rounded-xl p-4 mb-6 text-center border border-slate-200">
+                                <p className="text-sm text-slate-500 mb-1">Total a Cobrar</p>
+                                <p className="text-4xl font-bold text-slate-800 font-mono">{formatCurrency(total)}</p>
+                            </div>
+
+                            {paymentMethod === 'cash' ? (
+                                <div className="space-y-6 fade-in">
+                                    {/* Amount Input */}
+                                    <div>
+                                        <label className="block text-sm font-semibold text-slate-700 mb-2">Monto Recibido</label>
+                                        <div className="relative">
+                                            <span className="absolute left-4 top-1/2 transform -translate-y-1/2 text-slate-400 font-bold text-xl">$</span>
+                                            <input 
+                                                type="number"
+                                                step="0.01"
+                                                className="w-full pl-10 pr-4 py-4 text-2xl font-bold border-2 border-slate-200 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none font-mono text-center"
+                                                value={cashAmount}
+                                                onChange={(e) => setCashAmount(e.target.value)}
+                                                placeholder="0.00"
+                                                autoFocus
+                                            />
+                                        </div>
+                                    </div>
+
+                                    {/* Quick Bills */}
+                                    <div>
+                                        <label className="block text-sm font-semibold text-slate-700 mb-2">Billetes Rápidos</label>
+                                        <div className="grid grid-cols-4 gap-3">
+                                            {quickBills.map(bill => (
+                                                <button 
+                                                    key={bill}
+                                                    onClick={() => setCashAmount(bill.toString())}
+                                                    className="cash-btn py-3 bg-slate-100 hover:bg-slate-200 rounded-xl font-bold text-slate-800 border-2 border-slate-200 transition-colors"
+                                                >
+                                                    ${bill}
+                                                </button>
+                                            ))}
+                                        </div>
+                                    </div>
+
+                                    {/* Change Display */}
+                                    {cashNum > 0 && (
+                                        <div className={`rounded-xl p-4 text-center border-2 ${change >= 0 ? 'bg-emerald-50 border-emerald-200' : 'bg-red-50 border-red-200'}`}>
+                                            <p className="text-sm text-slate-600 mb-1">Cambio a Entregar</p>
+                                            <p className={`text-3xl font-bold font-mono ${changeColor}`}>{formatCurrency(Math.abs(change))}</p>
+                                        </div>
+                                    )}
+                                </div>
+                            ) : (
+                                <div className="space-y-4 fade-in">
+                                    {/* Student Search */}
+                                    <div>
+                                        <label className="block text-sm font-semibold text-slate-700 mb-2">Buscar Alumno</label>
+                                        <div className="relative">
+                                            <i className="fas fa-search absolute left-4 top-1/2 transform -translate-y-1/2 text-slate-400"></i>
+                                            <input 
+                                                type="text"
+                                                className="w-full pl-12 pr-4 py-3 border-2 border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+                                                placeholder="Nombre o matrícula..."
+                                                value={studentSearch}
+                                                onChange={(e) => setStudentSearch(e.target.value)}
+                                            />
+                                        </div>
+                                    </div>
+
+                                    {/* Student List */}
+                                    <div className="space-y-2 max-h-48 overflow-y-auto">
+                                        {filteredStudents.map(student => {
+                                            const isSelected = selectedStudent === student.id;
+                                            const hasBalance = student.saldo >= total;
+                                            return (
+                                                <button 
+                                                    key={student.id}
+                                                    onClick={() => setSelectedStudent(student.id)}
+                                                    className={`w-full text-left p-4 rounded-xl border-2 transition-all ${isSelected ? 'border-blue-500 bg-blue-50 shadow-md' : 'border-slate-200 hover:border-slate-300'}`}
+                                                >
+                                                    <div className="flex items-center justify-between">
+                                                        <div>
+                                                            <p className="font-semibold text-slate-800">{student.nombre}</p>
+                                                            <p className="text-xs text-slate-500">{student.id} • {student.grado}</p>
+                                                        </div>
+                                                        <div className="text-right">
+                                                            <p className="text-xs text-slate-500 mb-1">Saldo disponible</p>
+                                                            <p className={`font-bold font-mono ${hasBalance ? 'text-emerald-600' : 'text-red-600'}`}>{formatCurrency(student.saldo)}</p>
+                                                        </div>
+                                                    </div>
+                                                </button>
+                                            );
+                                        })}
+                                    </div>
+
+                                    {selectedStudentData && (
+                                        <div className={`rounded-xl p-4 border-2 ${selectedStudentData.saldo >= total ? 'bg-blue-50 border-blue-200' : 'bg-red-50 border-red-200'}`}>
+                                            <div className="flex items-center justify-between">
+                                                <div>
+                                                    <p className="text-sm text-slate-600">Nuevo saldo después del cobro</p>
+                                                    <p className="text-2xl font-bold font-mono text-slate-800">{formatCurrency(selectedStudentData.saldo - total)}</p>
+                                                </div>
+                                                {selectedStudentData.saldo < total && (
+                                                    <p className="text-sm text-red-600 font-medium"><i className="fas fa-exclamation-circle mr-1"></i>Saldo insuficiente</p>
+                                                )}
+                                            </div>
+                                        </div>
+                                    )}
+                                </div>
+                            )}
+                        </div>
+
+                        {/* Modal Footer */}
+                        <div className="border-t border-slate-200 p-4 bg-slate-50 flex space-x-3">
+                            <button 
+                                onClick={onClose}
+                                className="flex-1 py-3 border-2 border-slate-200 rounded-xl font-semibold text-slate-600 hover:bg-slate-100 transition-colors"
+                            >
+                                Cancelar
+                            </button>
+                            <button 
+                                onClick={handleCheckout}
+                                className="flex-[2] py-3 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-bold shadow-lg shadow-emerald-200 transition-colors flex items-center justify-center space-x-2"
+                            >
+                                <i className="fas fa-check-circle"></i>
+                                <span>Confirmar Pago</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            );
+        }
+
+        // --- Corte de Caja Modal ---
+        function CorteDeCajaModal({ transactions, onClose }) {
+            const today = new Date().toISOString().split('T')[0];
+            const todayTransactions = transactions.filter(t => t.fecha && t.fecha.startsWith(today));
+            
+            const totalVentas = todayTransactions.reduce((sum, t) => sum + t.total, 0);
+            const totalEfectivo = todayTransactions.filter(t => t.metodo === 'efectivo').reduce((sum, t) => sum + t.total, 0);
+            const totalSaldo = todayTransactions.filter(t => t.metodo === 'saldo_alumno').reduce((sum, t) => sum + t.total, 0);
+            const totalItems = todayTransactions.reduce((sum, t) => sum + t.items.reduce((is, i) => is + i.cantidad, 0), 0);
+
+            const handleCorte = () => {
+                if (confirm('¿Estás seguro de realizar el corte de caja? Esto limpiará las transacciones de hoy.')) {
+                    const remaining = transactions.filter(t => !t.fecha || !t.fecha.startsWith(today));
+                    Storage.set(STORAGE.TRANSACTIONS, remaining);
+                    onClose();
+                    alert('Corte de caja realizado exitosamente.');
+                    window.location.reload();
+                }
+            };
+
+            return (
+                <div className="modal-backdrop fixed inset-0 z-50 flex items-center justify-center p-4 fade-in">
+                    <div className="bg-white rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-hidden shadow-2xl flex flex-col" onClick={e => e.stopPropagation()}>
+                        <div className="bg-slate-800 text-white px-6 py-4 flex items-center justify-between">
+                            <h2 className="text-xl font-bold"><i className="fas fa-cash-register mr-2"></i>Corte de Caja</h2>
+                            <button onClick={onClose} className="text-slate-400 hover:text-white transition-colors">
+                                <i className="fas fa-times text-xl"></i>
+                            </button>
+                        </div>
+
+                        <div className="flex-1 overflow-y-auto p-6">
+                            <div className="bg-emerald-50 border-2 border-emerald-200 rounded-xl p-6 mb-6 text-center">
+                                <p className="text-sm text-emerald-700 mb-2">Total Ventas del Día</p>
+                                <p className="text-5xl font-bold text-emerald-800 font-mono">{formatCurrency(totalVentas)}</p>
+                            </div>
+
+                            <div className="grid grid-cols-2 gap-4 mb-6">
+                                <div className="bg-slate-50 rounded-xl p-4 border border-slate-200">
+                                    <div className="flex items-center space-x-3 mb-2">
+                                        <div className="w-10 h-10 bg-emerald-100 rounded-lg flex items-center justify-center text-emerald-600">
+                                            <i className="fas fa-money-bill-wave"></i>
+                                        </div>
+                                        <div>
+                                            <p className="text-sm text-slate-500">Efectivo</p>
+                                            <p className="text-xl font-bold font-mono text-emerald-600">{formatCurrency(totalEfectivo)}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className="bg-slate-50 rounded-xl p-4 border border-slate-200">
+                                    <div className="flex items-center space-x-3 mb-2">
+                                        <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center text-blue-600">
+                                            <i className="fas fa-id-card"></i>
+                                        </div>
+                                        <div>
+                                            <p className="text-sm text-slate-500">Saldo Alumno</p>
+                                            <p className="text-xl font-bold font-mono text-blue-600">{formatCurrency(totalSaldo)}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="grid grid-cols-2 gap-4 mb-6">
+                                <div className="bg-slate-50 rounded-xl p-4 border border-slate-200 text-center">
+                                    <p className="text-2xl font-bold text-slate-800">{todayTransactions.length}</p>
+                                    <p className="text-sm text-slate-500">Transacciones</p>
+                                </div>
+                                <div className="bg-slate-50 rounded-xl p-4 border border-slate-200 text-center">
+                                    <p className="text-2xl font-bold text-slate-800">{totalItems}</p>
+                                    <p className="text-sm text-slate-500">Productos Vendidos</p>
+                                </div>
+                            </div>
+
+                            {/* Recent Transactions */}
+                            {todayTransactions.length > 0 && (
+                                <div>
+                                    <h3 className="font-semibold text-slate-700 mb-3">Transacciones del Día</h3>
+                                    <div className="space-y-2 max-h-48 overflow-y-auto">
+                                        {todayTransactions.map((t, i) => (
+                                            <div key={i} className="bg-slate-50 rounded-lg p-3 border border-slate-200 flex items-center justify-between">
+                                                <div>
+                                                    <p className="text-sm font-medium text-slate-800">
+                                                        {t.metodo === 'efectivo' ? '💵 Efectivo' : `🎓 ${t.alumnoNombre || 'Saldo'}`}
+                                                    </p>
+                                                    <p className="text-xs text-slate-500">{new Date(t.fecha).toLocaleTimeString('es-MX', {hour: '2-digit', minute:'2-digit'})} • {t.items.length} productos</p>
+                                                </div>
+                                                <p className="font-bold font-mono text-slate-800">{formatCurrency(t.total)}</p>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+
+                        <div className="border-t border-slate-200 p-4 bg-slate-50 flex space-x-3">
+                            <button onClick={onClose} className="flex-1 py-3 border-2 border-slate-200 rounded-xl font-semibold text-slate-600 hover:bg-slate-100 transition-colors">
+                                Cerrar
+                            </button>
+                            <button onClick={handleCorte} className="flex-[2] py-3 bg-red-600 hover:bg-red-700 text-white rounded-xl font-bold transition-colors flex items-center justify-center space-x-2">
+                                <i className="fas fa-cut"></i>
+                                <span>Realizar Corte</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            );
+        }
+
+        // ============================================================================
+        // MAIN APP
+        // ============================================================================
+
+        function App() {
+            const [selectedCategory, setSelectedCategory] = useState('todos');
+            const [cartItems, setCartItems] = useState([]);
+            const [showCheckout, setShowCheckout] = useState(false);
+            const [showCorte, setShowCorte] = useState(false);
+            const [products, setProducts] = useState([]);
+            const [students, setStudents] = useState([]);
+            const [transactions, setTransactions] = useState([]);
+
+            useEffect(() => {
+                setProducts(Storage.get(STORAGE.PRODUCTS, []));
+                setStudents(Storage.get(STORAGE.STUDENTS, []));
+                setTransactions(Storage.get(STORAGE.TRANSACTIONS, []));
+            }, []);
+
+            const addToCart = useCallback((product) => {
+                setCartItems(prev => {
+                    const existing = prev.find(item => item.id === product.id);
+                    if (existing) {
+                        return prev.map(item => item.id === product.id ? { ...item, cantidad: item.cantidad + 1 } : item);
+                    }
+                    return [...prev, { ...product, cantidad: 1 }];
+                });
+            }, []);
+
+            const updateQuantity = useCallback((productId, newQty) => {
+                if (newQty <= 0) {
+                    setCartItems(prev => prev.filter(item => item.id !== productId));
+                } else {
+                    setCartItems(prev => prev.map(item => item.id === productId ? { ...item, cantidad: newQty } : item));
+                }
+            }, []);
+
+            const removeFromCart = useCallback((productId) => {
+                setCartItems(prev => prev.filter(item => item.id !== productId));
+            }, []);
+
+            const completePayment = useCallback((paymentData) => {
+                const transaction = {
+                    ...paymentData,
+                    fecha: new Date().toISOString(),
+                    id: `TXN${Date.now()}`
+                };
+
+                // Save transaction
+                const newTransactions = [...transactions, transaction];
+                Storage.set(STORAGE.TRANSACTIONS, newTransactions);
+                setTransactions(newTransactions);
+
+                // Update student balance if paid with saldo
+                if (paymentData.method === 'saldo_alumno' && paymentData.alumnoId) {
+                    const updatedStudents = students.map(s => {
+                        if (s.id === paymentData.alumnoId) {
+                            return { ...s, saldo: s.saldo - paymentData.total };
+                        }
+                        return s;
+                    });
+                    Storage.set(STORAGE.STUDENTS, updatedStudents);
+                    setStudents(updatedStudents);
+                }
+
+                // Clear cart
+                setCartItems([]);
+                setShowCheckout(false);
+            }, [transactions, students]);
+
+            const total = cartItems.reduce((sum, item) => sum + (item.precio * item.cantidad), 0);
+
+            return (
+                <div className="h-screen flex flex-col bg-slate-100">
+                    <Header onCorteDeCaja={() => setShowCorte(true)} />
+                    
+                    <div className="flex-1 flex overflow-hidden">
+                        {/* Product Grid */}
+                        <div className="flex-1 flex flex-col">
+                            <ProductGrid 
+                                selectedCategory={selectedCategory} 
+                                setSelectedCategory={setSelectedCategory}
+                                onAddToCart={addToCart}
+                                products={products}
+                            />
+                        </div>
+
+                        {/* Ticket */}
+                        <div className="w-96 flex-shrink-0">
+                            <Ticket 
+                                items={cartItems}
+                                onUpdateQuantity={updateQuantity}
+                                onRemove={removeFromCart}
+                                onCheckout={() => setShowCheckout(true)}
+                            />
+                        </div>
+                    </div>
+
+                    {/* Modals */}
+                    {showCheckout && (
+                        <CheckoutModal 
+                            items={cartItems}
+                            total={total}
+                            onClose={() => setShowCheckout(false)}
+                            onCompletePayment={completePayment}
+                            students={students}
+                        />
+                    )}
+
+                    {showCorte && (
+                        <CorteDeCajaModal 
+                            transactions={transactions}
+                            onClose={() => setShowCorte(false)}
+                        />
+                    )}
+                </div>
+            );
+        }
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>
+```

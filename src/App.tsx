@@ -14,7 +14,8 @@ function AppContent() {
   const location = useLocation();
   const isDemo = location.pathname.startsWith('/demos/standard') || 
                  location.pathname.startsWith('/demos/lite') ||
-                 location.pathname.startsWith('/demos/admin');
+                 location.pathname.startsWith('/demos/admin') ||
+                 location.pathname.startsWith('/manual/');
   const isProtectedRoute = location.pathname.endsWith('/login') || location.pathname.endsWith('/dashboard');
 
   return (
@@ -31,6 +32,11 @@ function AppContent() {
             <DataProvider mode="mock">
               <AdminApp />
             </DataProvider>
+          } />
+          <Route path="/demos/pos/*" element={
+            <POSProvider mode="mock">
+              <CafeteriaApp />
+            </POSProvider>
           } />
         </Routes>
       </main>
