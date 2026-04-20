@@ -21,4 +21,4 @@
     pointer-events: none;
     z-index: 50;
   }
-}
+}@media print { .no-print { display: none !important; } .print-only { display: block !important; } body { background: white; } } .print-only { display: none; }

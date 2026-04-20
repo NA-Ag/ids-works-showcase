@@ -55,8 +55,48 @@ export const enrollments = sqliteTable('enrollments', {
 });
 
 // ==========================================
-// POS (Point of Sale) Tables
+// Finance Tracker Tables
 // ==========================================
+
+export const billingInfo = sqliteTable('billing_info', {
+  id: text('id').primaryKey(),
+  tutorId: text('tutor_id')
+    .notNull()
+    .references(() => tutors.id),
+  rfc: text('rfc').notNull(),
+  legalName: text('legal_name').notNull(),
+  cfdiUse: text('cfdi_use').notNull(), // e.g., 'D10'
+});
+
+export const payments = sqliteTable('payments', {
+  id: text('id').primaryKey(),
+  studentId: text('student_id')
+    .notNull()
+    .references(() => students.id),
+  concept: text('concept').notNull(), // e.g., 'Colegiatura', 'Inscripción'
+  month: text('month'), // e.g., 'Septiembre'
+  amount: integer('amount').notNull(), // Amount in cents
+  paymentDate: text('payment_date'), // ISO string or unix timestamp
+  paymentMethod: text('payment_method'), // e.g., 'Transferencia (SPEI)', 'Efectivo'
+  status: text('status').notNull().default('Pendiente'), // 'Pagado', 'Pendiente', 'Vencido'
+  folio: text('folio'), // e.g., 'REC-2026-0001'
+});
+
+// ==========================================
+// Discipline Tracker Tables
+// ==========================================
+
+export const disciplineRecords = sqliteTable('discipline_records', {
+  id: text('id').primaryKey(),
+  studentId: text('student_id')
+    .notNull()
+    .references(() => students.id),
+  type: text('type').notNull(), // 'retardo', 'uniforme', 'reporte'
+  date: text('date').notNull(), // ISO string or unix timestamp
+  reason: text('reason'), // detailed description
+  severity: text('severity').default('leve'), // 'leve', 'moderado', 'severo'
+});
+
 
 export const posCategories = sqliteTable('pos_categories', {
   id: text('id').primaryKey(),

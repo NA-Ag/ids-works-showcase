@@ -11,6 +11,10 @@ import { AdminApp } from './demos/admin/App';
 import { DataProvider } from './demos/admin/context/DataContext';
 import { CafeteriaApp } from './demos/cafeteria/App';
 import { POSProvider } from './demos/cafeteria/context/POSContext';
+import { FinanceApp } from './demos/finance/App';
+import { FinanceProvider } from './demos/finance/context/FinanceContext';
+import { DisciplineApp } from './demos/discipline/App';
+import { DisciplineProvider } from './demos/discipline/context/DisciplineContext';
 
 function AppContent() {
   const location = useLocation();
@@ -18,6 +22,8 @@ function AppContent() {
                  location.pathname.startsWith('/demos/lite') ||
                  location.pathname.startsWith('/demos/admin') ||
                  location.pathname.startsWith('/demos/pos') ||
+                 location.pathname.startsWith('/demos/finance') ||
+                 location.pathname.startsWith('/demos/discipline') ||
                  location.pathname.startsWith('/manual/');
   const isProtectedRoute = location.pathname.endsWith('/login') || location.pathname.endsWith('/dashboard');
 
@@ -40,6 +46,16 @@ function AppContent() {
             <POSProvider mode="mock">
               <CafeteriaApp />
             </POSProvider>
+          } />
+          <Route path="/demos/finance/*" element={
+            <FinanceProvider mode="mock">
+              <FinanceApp />
+            </FinanceProvider>
+          } />
+          <Route path="/demos/discipline/*" element={
+            <DisciplineProvider mode="mock">
+              <DisciplineApp />
+            </DisciplineProvider>
           } />
         </Routes>
       </main>
