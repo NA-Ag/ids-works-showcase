@@ -97,6 +97,30 @@ export const disciplineRecords = sqliteTable('discipline_records', {
   severity: text('severity').default('leve'), // 'leve', 'moderado', 'severo'
 });
 
+// ==========================================
+// HR Pre-nómina Tables
+// ==========================================
+
+export const employees = sqliteTable('employees', {
+  id: text('id').primaryKey(), // e.g. EMP001
+  name: text('name').notNull(),
+  position: text('position').notNull(),
+  paymentType: text('payment_type').notNull(), // 'fijo', 'hora'
+  baseSalary: integer('base_salary').notNull(), // Amount in cents
+  rfc: text('rfc').notNull().unique(),
+  nss: text('nss').notNull(),
+});
+
+export const incidences = sqliteTable('incidences', {
+  id: text('id').primaryKey(), // e.g. INC001
+  employeeId: text('employee_id')
+    .notNull()
+    .references(() => employees.id),
+  date: text('date').notNull(), // YYYY-MM-DD
+  type: text('type').notNull(), // 'retardo', 'falta_injustificada', 'incapacidad_imss', 'permiso'
+  notes: text('notes'),
+});
+
 
 export const posCategories = sqliteTable('pos_categories', {
   id: text('id').primaryKey(),

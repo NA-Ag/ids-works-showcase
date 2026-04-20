@@ -57,6 +57,11 @@ function AppContent() {
               <DisciplineApp />
             </DisciplineProvider>
           } />
+          <Route path="/demos/hr/*" element={
+            <HRProvider mode="mock">
+              <HRApp />
+            </HRProvider>
+          } />
         </Routes>
       </main>
       {!isDemo && <Footer />}
