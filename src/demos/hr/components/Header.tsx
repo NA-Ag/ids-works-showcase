@@ -15,7 +15,7 @@ export const Header: React.FC<HeaderProps> = ({ currentView, setView, period, se
   const navItems = [
     { id: 'dashboard', icon: ChartPie, label: 'Panel Principal' },
     { id: 'directorio', icon: Users, label: 'Directorio' },
-    { id: 'prenomina', icon: FileInvoiceDollar, label: 'Pre-nómina' }
+    { id: 'prenomina', icon: Receipt, label: 'Pre-nómina' }
   ];
 
   const getPeriodDates = (p: PayrollPeriod) => {

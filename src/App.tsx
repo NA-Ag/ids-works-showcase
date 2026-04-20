@@ -15,6 +15,8 @@ import { FinanceApp } from './demos/finance/App';
 import { FinanceProvider } from './demos/finance/context/FinanceContext';
 import { DisciplineApp } from './demos/discipline/App';
 import { DisciplineProvider } from './demos/discipline/context/DisciplineContext';
+import { HRApp } from './demos/hr/App';
+import { HRProvider } from './demos/hr/context/HRContext';
 
 function AppContent() {
   const location = useLocation();
@@ -24,6 +26,7 @@ function AppContent() {
                  location.pathname.startsWith('/demos/pos') ||
                  location.pathname.startsWith('/demos/finance') ||
                  location.pathname.startsWith('/demos/discipline') ||
+                 location.pathname.startsWith('/demos/hr') ||
                  location.pathname.startsWith('/manual/');
   const isProtectedRoute = location.pathname.endsWith('/login') || location.pathname.endsWith('/dashboard');
 

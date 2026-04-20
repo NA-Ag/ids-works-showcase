@@ -57,7 +57,7 @@ export const Dashboard: React.FC = () => {
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <MetricCard title="Empleados Activos" value={metrics.empleados.toString()} subtitle="Padrón Actual" icon={Users} color="blue" />
-        <MetricCard title="Total Pre-nómina" value={formatCurrency(metrics.totalNeto)} subtitle="Neto a pagar" icon={FileInvoiceDollar} color="green" />
+        <MetricCard title="Total Pre-nómina" value={formatCurrency(metrics.totalNeto)} subtitle="Neto a pagar" icon={Receipt} color="green" />
         <MetricCard title="Deducciones" value={formatCurrency(metrics.totalDeductions)} subtitle="Descuentos aplicados" icon={TrendingDown} color="red" />
         <MetricCard title="Incidencias" value={`${metrics.faltas} F, ${metrics.retardos} R`} subtitle="En este periodo" icon={AlertCircle} color="yellow" />
       </div>
