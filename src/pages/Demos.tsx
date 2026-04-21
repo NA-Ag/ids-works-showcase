@@ -324,19 +324,19 @@ export const Demos: React.FC = () => {
               <div 
                 key={mod.id} 
                 className={`bg-white border-2 p-8 flex flex-col items-center text-center transition-all ${
-                  (mod.id === 'admin' || mod.id === 'pos' || mod.id === 'finance' || mod.id === 'discipline' || mod.id === 'hr') 
+                  (mod.id === 'admin' || mod.id === 'pos' || mod.id === 'finance' || mod.id === 'discipline' || mod.id === 'hr' || mod.id === 'library' || mod.id === 'clinic') 
                     ? 'border-vault-blue shadow-xl hover:-translate-y-1' 
                     : 'border-gray-100 opacity-60 grayscale cursor-not-allowed hover:opacity-80'
                 }`}
               >
-                <div className={`p-4 rounded-full mb-4 ${(mod.id === 'admin' || mod.id === 'pos' || mod.id === 'finance' || mod.id === 'discipline' || mod.id === 'hr') ? 'bg-blue-50' : ''}`}>
-                  <mod.icon className={`w-12 h-12 ${(mod.id === 'admin' || mod.id === 'pos' || mod.id === 'finance' || mod.id === 'discipline' || mod.id === 'hr') ? 'text-vault-blue' : 'text-gray-400'}`} />
+                <div className={`p-4 rounded-full mb-4 ${(mod.id === 'admin' || mod.id === 'pos' || mod.id === 'finance' || mod.id === 'discipline' || mod.id === 'hr' || mod.id === 'library' || mod.id === 'clinic') ? 'bg-blue-50' : ''}`}>
+                  <mod.icon className={`w-12 h-12 ${(mod.id === 'admin' || mod.id === 'pos' || mod.id === 'finance' || mod.id === 'discipline' || mod.id === 'hr' || mod.id === 'library' || mod.id === 'clinic') ? 'text-vault-blue' : 'text-gray-400'}`} />
                 </div>
-                <h3 className={`text-xl font-black mb-2 ${(mod.id === 'admin' || mod.id === 'pos' || mod.id === 'finance' || mod.id === 'discipline' || mod.id === 'hr') ? 'text-vault-darkBlue' : 'text-vault-darkBlue'}`}>{mod.title}</h3>
+                <h3 className={`text-xl font-black mb-2 ${(mod.id === 'admin' || mod.id === 'pos' || mod.id === 'finance' || mod.id === 'discipline' || mod.id === 'hr' || mod.id === 'library' || mod.id === 'clinic') ? 'text-vault-darkBlue' : 'text-vault-darkBlue'}`}>{mod.title}</h3>
                 <p className="text-xs text-gray-500 mb-6 flex-grow">{mod.focus}</p>
                 
                 <div className="w-full mt-auto space-y-3">
-                  {(mod.id === 'admin' || mod.id === 'pos' || mod.id === 'finance' || mod.id === 'discipline' || mod.id === 'hr') ? (
+                  {(mod.id === 'admin' || mod.id === 'pos' || mod.id === 'finance' || mod.id === 'discipline' || mod.id === 'hr' || mod.id === 'library' || mod.id === 'clinic') ? (
                     <Link 
                       to={`/demos/${mod.id}`} 
                       target="_blank"

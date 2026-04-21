@@ -121,6 +121,49 @@ export const incidences = sqliteTable('incidences', {
   notes: text('notes'),
 });
 
+// ==========================================
+// Library System Tables
+// ==========================================
+
+export const books = sqliteTable('books', {
+  id: text('id').primaryKey(), // e.g., LIB001
+  code: text('code').notNull().unique(), // ISBN or internal barcode
+  title: text('title').notNull(),
+  author: text('author').notNull(),
+  publisher: text('publisher'),
+  status: text('status').notNull().default('disponible'), // 'disponible', 'prestado', 'vencido'
+});
+
+export const bookLoans = sqliteTable('book_loans', {
+  id: text('id').primaryKey(),
+  bookId: text('book_id')
+    .notNull()
+    .references(() => books.id),
+  studentId: text('student_id')
+    .notNull()
+    .references(() => students.id),
+  loanDate: text('loan_date').notNull(), // ISO string
+  dueDate: text('due_date').notNull(), // ISO string
+  returnDate: text('return_date'), // ISO string, null if not returned
+  status: text('status').notNull().default('prestado'), // 'prestado', 'devuelto', 'vencido'
+});
+
+// ==========================================
+// Medical Clinic Tables
+// ==========================================
+
+export const medicalVisits = sqliteTable('medical_visits', {
+  id: text('id').primaryKey(), // e.g. VIS001
+  studentId: text('student_id')
+    .notNull()
+    .references(() => students.id),
+  reason: text('reason').notNull(),
+  treatment: text('treatment').notNull(),
+  notes: text('notes'),
+  dateTime: text('date_time').notNull(), // ISO string
+  nurseName: text('nurse_name').notNull(),
+});
+
 
 export const posCategories = sqliteTable('pos_categories', {
   id: text('id').primaryKey(),

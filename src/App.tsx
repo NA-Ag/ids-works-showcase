@@ -17,6 +17,10 @@ import { DisciplineApp } from './demos/discipline/App';
 import { DisciplineProvider } from './demos/discipline/context/DisciplineContext';
 import { HRApp } from './demos/hr/App';
 import { HRProvider } from './demos/hr/context/HRContext';
+import { LibraryApp } from './demos/library/App';
+import { LibraryProvider } from './demos/library/context/LibraryContext';
+import { ClinicApp } from './demos/clinic/App';
+import { ClinicProvider } from './demos/clinic/context/ClinicContext';
 
 function AppContent() {
   const location = useLocation();
@@ -27,6 +31,8 @@ function AppContent() {
                  location.pathname.startsWith('/demos/finance') ||
                  location.pathname.startsWith('/demos/discipline') ||
                  location.pathname.startsWith('/demos/hr') ||
+                 location.pathname.startsWith('/demos/library') ||
+                 location.pathname.startsWith('/demos/clinic') ||
                  location.pathname.startsWith('/manual/');
   const isProtectedRoute = location.pathname.endsWith('/login') || location.pathname.endsWith('/dashboard');
 
@@ -64,6 +70,16 @@ function AppContent() {
             <HRProvider mode="mock">
               <HRApp />
             </HRProvider>
+          } />
+          <Route path="/demos/library/*" element={
+            <LibraryProvider mode="mock">
+              <LibraryApp />
+            </LibraryProvider>
+          } />
+          <Route path="/demos/clinic/*" element={
+            <ClinicProvider mode="mock">
+              <ClinicApp />
+            </ClinicProvider>
           } />
         </Routes>
       </main>
